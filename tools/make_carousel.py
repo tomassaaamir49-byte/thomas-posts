@@ -187,6 +187,12 @@ def slide_cta(s, i, n):
         tw = d.textlength(sub, font=fs, direction="rtl")
         d.text((W - M - 130 - tw, y + 72), sub, font=fs, fill=MUTED, direction="rtl")
         y += 155
+    src = s.get("source")
+    if src:
+        fs = font(28, 600)
+        line = "المصدر: " + src
+        tw = d.textlength(line, font=fs, direction="rtl")
+        d.text(((W - tw) / 2, H - 200), line, font=fs, fill=MUTED, direction="rtl")
     footer(d)
     return img
 
@@ -197,7 +203,10 @@ def main(spec_path, outdir):
     slides = spec["slides"]
     n = len(slides)
     paths = []
+    spec_source = spec.get("source")
     for i, s in enumerate(slides, 1):
+        if s["type"] == "cta" and spec_source and "source" not in s:
+            s = dict(s, source=spec_source)
         fn = {"cover": slide_cover, "point": slide_point, "cta": slide_cta}[s["type"]]
         img = fn(s, i, n)
         p = os.path.join(outdir, f"slide_{i:02d}.jpg")  # Instagram publishing accepts JPEG

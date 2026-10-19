@@ -78,6 +78,11 @@ def scene_img(s, i, n):
         y += 50
     if text:
         centered(d, text, ft, y, mc.NAVY, gap=1.4)
+    if s.get("source"):
+        fs = mc.font(32, 600)
+        line = "المصدر: " + s["source"]
+        tw = d.textlength(line, font=fs, direction="rtl")
+        d.text(((W - tw) / 2, H - 330), line, font=fs, fill=mc.MUTED, direction="rtl")
     footer(d)
     return img
 
@@ -86,6 +91,8 @@ def main(spec_path, outdir):
     spec = json.load(open(spec_path, encoding="utf-8"))
     os.makedirs(outdir, exist_ok=True)
     scenes = spec["scenes"]
+    if spec.get("source"):
+        scenes[-1] = dict(scenes[-1], source=spec["source"])
     tmp = tempfile.mkdtemp()
     parts = []
     for i, s in enumerate(scenes):

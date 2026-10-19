@@ -8,11 +8,17 @@ Folders/specs are named `<date>-am` and `<date>-pm` (e.g. posts/2026-10-21-am, s
 
 Reels get original synthesized music automatically (tools/make_music.py); never add copyrighted songs.
 
+## Sources (mandatory)
+Every fact must come from an approved reference — standard medical textbooks (Davidson's, Harrison's, Oxford Handbook of Clinical Medicine, Kumar & Clark, Nelson, Williams Obstetrics) or official bodies (WHO, NHS, NICE, CDC, ECDC, Mayo Clinic, Egyptian Ministry of Health).
+- Before writing a spec, use WebSearch/WebFetch to open the official page for the topic and check EVERY sentence against it. Drop any claim you cannot match to the source; do not mark "warning" items as "emergency" unless the source says so.
+- Put the source name in Arabic in the spec as `"source": "..."` (it is printed on the last slide / last scene) and add `📚 المصدر: <name> — <url>` as the line before the disclaimer in the caption.
+- If no approved source covers the topic, choose another topic.
+
 ## Each run
 1. Find the next Cairo date (tomorrow or later) that does not yet have BOTH `posts/<date>-am` and `posts/<date>-pm`.
    Prepare whichever of the two slots is missing for that date (normally both). Never prepare a date in the past or redo an existing folder.
 2. Slot `am` is always a carousel; slot `pm` is always a reel. The two topics of the same day must be different.
-3. For each slot pick a NEW topic not listed in `topics.md`. Rotate content angles that get reach:
+3. For each slot pick a NEW topic (and its approved source) not listed in `topics.md`. Rotate content angles that get reach:
    - خرافات طبية مصدقها (myth vs. fact)
    - علامات خطر لازم تروح فيها للطوارئ (red flags)
    - غلطات يومية بتأذي صحتك (everyday mistakes)
