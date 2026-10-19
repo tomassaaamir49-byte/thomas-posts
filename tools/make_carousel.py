@@ -2,7 +2,7 @@
 
 usage: python3 make_carousel.py spec.json outdir
 """
-import json, sys, os, math
+import json, sys, os, math, re
 from PIL import Image, ImageDraw, ImageFont
 
 FONT = os.environ.get("CAROUSEL_FONT",
@@ -23,6 +23,9 @@ USER = "@thomassamir_medical_student"
 AR_DIGITS = str.maketrans("0123456789", "٠١٢٣٤٥٦٧٨٩")
 
 
+_EMOJI = re.compile("[\U0001F000-\U0001FAFF\u2600-\u27BF\uFE0F\u200d]+")
+
+
 def font(size, weight=700):
     f = ImageFont.truetype(FONT, size)
     f.set_variation_by_axes([weight, 0])
@@ -30,6 +33,7 @@ def font(size, weight=700):
 
 
 def wrap(draw, text, f, maxw, rtl=True):
+    text = _EMOJI.sub("", text or "").strip()  # font has no emoji glyphs
     lines = []
     for para in text.split("\n"):
         words, cur = para.split(" "), ""
