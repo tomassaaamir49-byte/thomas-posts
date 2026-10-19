@@ -105,10 +105,15 @@ def main(spec_path, outdir):
     lst = os.path.join(tmp, "list.txt")
     open(lst, "w").write("".join(f"file '{p}'\n" for p in parts))
     video = os.path.join(outdir, "reel.mp4")
-    # Instagram wants an audio track to exist; add silent AAC
+    # original background music (synthesized, royalty-free), seeded by the output folder name
+    import make_music
+    from scipy.io import wavfile
+    total = sum(float(s.get("secs", 3.5)) for s in scenes)
+    seed = sum(ord(c) for c in os.path.basename(os.path.normpath(outdir)))
+    wav = os.path.join(tmp, "music.wav")
+    wavfile.write(wav, make_music.SR, make_music.make(total + 0.5, seed))
     subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", lst,
-                    "-f", "lavfi", "-i", "anullsrc=channel_layout=stereo:sample_rate=44100",
-                    "-c:v", "copy", "-c:a", "aac", "-b:a", "64k", "-shortest",
+                    "-i", wav, "-c:v", "copy", "-c:a", "aac", "-b:a", "160k", "-shortest",
                     "-movflags", "+faststart", video], check=True)
     # cover image = first scene
     cover = os.path.join(outdir, "cover.jpg")

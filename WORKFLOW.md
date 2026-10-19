@@ -4,6 +4,8 @@ Account owner: توماس سمير فوزي, طالب طب بشري (medical stu
 Goal: grow followers, reach and engagement with Egyptian-Arabic medical awareness for the general public.
 Metricool brand (blogId): 7301767. Network: instagram. Timezone: Africa/Cairo. Publish time: 10:00.
 
+Reels get original synthesized music automatically (tools/make_music.py); never add copyrighted songs.
+
 ## Each run
 1. Find the next date (Cairo) after the newest folder in `posts/` — that is the date to prepare.
    Never prepare a date that already has a folder. Never prepare a date in the past.
