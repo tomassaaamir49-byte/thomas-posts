@@ -27,7 +27,7 @@ Every fact must come from an approved reference — standard medical textbooks (
    Pick topics that are common, relatable and shareable in Egypt (صداع، ضغط، سكر، معدة، نوم، أطفال، صيام، حر، إسعافات…).
 4. Write the spec in `specs/<date>-<slot>.json` (Egyptian Arabic, short punchy lines).
    - Carousel: 7–9 slides. Slide 1 = hook (question/shock) using type `cover`; points use type `point` with `num`; last slide type `cta`.
-   - Reel: 7–9 scenes, ~30 s total (secs 3–4.5 each). Scene 1 hook in the first 3 seconds; last scene asks to send it to someone + follow.
+   - Reel (motion graphics): 7–9 scenes, ~30 s total (secs 3–4.5 each). Give EVERY scene an `"icon"` that matches its meaning, chosen from the file names in assets/icons (e.g. flame, droplet, pill, heart, brain, ambulance, thermometer, salad, moon, ban, circle-check). Optional `"kind"`: hook | do | dont | alert | info | cta (colours: do=green, dont/alert=red). Scene 1 hook in the first 3 seconds; last scene asks to send it to someone + follow.
    - On-screen text has no emojis (font can't draw them). Emojis are fine in the caption.
    - Spec also holds `"caption"`: first line = hook with the topic keyword; then save/send/comment CTA; "تابعني عشان معلومة طبية جديدة كل يوم."; the line "⚠️ المحتوى للتوعية فقط ومش بديل عن استشارة الطبيب."; 3–5 Arabic hashtags.
 5. Medical safety: only well-established facts. No drug doses, no prescriptions, no brand names, no diagnosis promises, nothing that discourages seeing a doctor. When in doubt, pick another topic.
