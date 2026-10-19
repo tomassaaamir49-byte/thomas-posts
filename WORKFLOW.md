@@ -2,7 +2,7 @@
 
 Account owner: توماس سمير فوزي, طالب طب بشري (medical student — NOT a doctor).
 Goal: grow followers, reach and engagement with Egyptian-Arabic medical awareness for the general public.
-Metricool brand (blogId): 7301767. Network: instagram. Timezone: Africa/Cairo. Publish time: 10:00.
+Metricool brand (blogId): 7301767. Networks: instagram AND facebook (page "توماس سمير طالب طب بشري"). Timezone: Africa/Cairo. Publish time: 10:00.
 
 Reels get original synthesized music automatically (tools/make_music.py); never add copyrighted songs.
 
@@ -29,7 +29,12 @@ Reels get original synthesized music automatically (tools/make_music.py); never 
    Look at the output (open slide images / extract a few frames with ffmpeg) and fix any overflow or broken text before publishing.
 7. Append `- <date> | carousel/reel | <topic>` to `topics.md`, commit, push to `main`.
 8. Confirm the raw URLs return 200: `https://raw.githubusercontent.com/tomassaaamir49-byte/thomas-posts/main/posts/<date>/...`
-9. Schedule with Metricool `createScheduledPost` for `<date>T10:00:00+03:00`, autoPublish true, providers instagram:
-   - carousel: media = all slide JPG raw URLs in order, instagramData type POST.
-   - reel: media = reel.mp4 raw URL, videoThumbnailUrl = cover.jpg raw URL, instagramData type REEL, showReelOnFeed true.
+9. Schedule with Metricool `createScheduledPost` for `<date>T10:00:00+03:00`, autoPublish true, providers [instagram, facebook]:
+   - carousel: media = all slide JPG raw URLs in order, instagramData type POST, facebookData type POST.
+   - reel: media = reel.mp4 raw URL, videoThumbnailUrl = cover.jpg raw URL, instagramData type REEL + showReelOnFeed true, facebookData type REEL.
+   - Reels only — try Instagram's licensed music library first: add instagramData.audioConfiguration
+     {"audioId": "<search term for a calm/emotional or trending instrumental>", "audioVolume": 80, "videoVolume": 0}.
+     If it is rejected with a list of candidates, retry once with the numeric id of a fitting instrumental candidate.
+     If it is rejected with a 403/catalog-unavailable error, schedule without audioConfiguration (the video already carries our own original music).
+   - If a provider fails (e.g. facebook disconnected), still schedule for the networks that work and report which one failed.
 10. Check it appears in `getScheduledPosts`. If anything fails, say exactly what failed.
