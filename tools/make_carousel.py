@@ -18,6 +18,19 @@ RED = (229, 57, 53)
 WHITE = (255, 255, 255)
 MUTED = (110, 130, 155)
 
+# Colour themes — pick with env POST_THEME=<name>; rotate so consecutive posts look different.
+THEMES = {
+    "ocean":   dict(NAVY=(11, 37, 69),  BLUE=(30, 115, 232), SKY=(232, 242, 255)),
+    "emerald": dict(NAVY=(10, 48, 40),  BLUE=(16, 150, 110), SKY=(228, 247, 239)),
+    "violet":  dict(NAVY=(40, 24, 72),  BLUE=(124, 77, 255), SKY=(240, 234, 255)),
+    "sunset":  dict(NAVY=(66, 32, 12),  BLUE=(234, 110, 30), SKY=(255, 240, 228)),
+    "rose":    dict(NAVY=(70, 18, 40),  BLUE=(219, 39, 119), SKY=(253, 233, 243)),
+    "teal":    dict(NAVY=(12, 50, 60),  BLUE=(13, 148, 170), SKY=(226, 246, 250)),
+}
+_t = THEMES.get(os.environ.get("POST_THEME", "ocean"), THEMES["ocean"])
+NAVY, BLUE, SKY = _t["NAVY"], _t["BLUE"], _t["SKY"]
+INK = tuple(int(c * 0.85) for c in NAVY)
+
 NAME = "توماس سمير فوزي • طالب طب بشري"
 USER = "@thomassamir_medical_student"
 AR_DIGITS = str.maketrans("0123456789", "٠١٢٣٤٥٦٧٨٩")

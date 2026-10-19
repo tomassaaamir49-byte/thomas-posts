@@ -255,9 +255,10 @@ def main(spec_path, outdir):
     nframes = int(round(total * FPS))
 
     bg = base_background()
-    blobs = [(blob(260, (205, 225, 255)), 0.13, 0.10, 0.0), (blob(220, (222, 234, 255)), 0.85, 0.78, 2.0),
-             (blob(180, (212, 230, 255)), 0.15, 0.62, 4.0)]
-    ecg = ecg_strip()
+    tint = lambda k: tuple(int(mc.SKY[i] * (1 - k) + BLUE[i] * k) for i in range(3))
+    blobs = [(blob(260, tint(0.18)), 0.13, 0.10, 0.0), (blob(220, tint(0.10)), 0.85, 0.78, 2.0),
+             (blob(180, tint(0.14)), 0.15, 0.62, 4.0)]
+    ecg = ecg_strip(tuple(int(mc.SKY[i] * 0.55 + BLUE[i] * 0.45) for i in range(3)))
     foot = footer_layer()
 
     tmp = tempfile.mkdtemp()

@@ -8,6 +8,12 @@ Folders/specs are named `<date>-am` and `<date>-pm` (e.g. posts/2026-10-21-am, s
 
 Reels get original synthesized music automatically (tools/make_music.py); never add copyrighted songs.
 
+## Freshness — every post must feel different from the one before it
+- THEME: render each post with a different colour theme than the previous post: `POST_THEME=<ocean|emerald|violet|sunset|rose|teal> python3 tools/...`. Record the theme in topics.md and never reuse the previous post's theme.
+- ANGLE: never use the same content angle (myth/red-flags/mistakes/body-explainer/first-aid/quiz "صح ولا غلط"/numbers & facts) twice in a row; vary the hook style (question, shocking fact, "غلطة بيعملها ٩٠٪", challenge).
+- WHAT THE AUDIENCE NEEDS NOW: before choosing topics, (1) WebSearch what health topics are in the news / trending in Egypt this week and what season it is (heat, flu season, exams, Ramadan, school start, outbreaks, viral myths) and pick topics people are searching for right now; (2) check Metricool analytics for the account's recent posts (getAnalyticsDataByMetrics — reach, saves, shares, plays) and lean toward the formats/topics that performed best.
+- MUSIC: reels use a song from Instagram's own music library (audioConfiguration, see step 9) — pick a currently popular/trending track whose mood fits the topic; use a different song from the previous reel. Only if Instagram refuses the audio, fall back to the video's built-in original music.
+
 ## Sources (mandatory)
 Every fact must come from an approved reference — standard medical textbooks (Davidson's, Harrison's, Oxford Handbook of Clinical Medicine, Kumar & Clark, Nelson, Williams Obstetrics) or official bodies (WHO, NHS, NICE, CDC, ECDC, Mayo Clinic, Egyptian Ministry of Health).
 - Before writing a spec, use WebSearch/WebFetch to open the official page for the topic and check EVERY sentence against it. Drop any claim you cannot match to the source; do not mark "warning" items as "emergency" unless the source says so.
