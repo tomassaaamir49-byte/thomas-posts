@@ -14,6 +14,12 @@ Reels get original synthesized music automatically (tools/make_music.py); never 
 - WHAT THE AUDIENCE NEEDS NOW: before choosing topics, (1) WebSearch what health topics are in the news / trending in Egypt this week and what season it is (heat, flu season, exams, Ramadan, school start, outbreaks, viral myths) and pick topics people are searching for right now; (2) check Metricool analytics for the account's recent posts (getAnalyticsDataByMetrics — reach, saves, shares, plays) and lean toward the formats/topics that performed best.
 - MUSIC: reels use a song from Instagram's own music library (audioConfiguration, see step 9) — pick a currently popular/trending track whose mood fits the topic; use a different song from the previous reel. Only if Instagram refuses the audio, fall back to the video's built-in original music.
 
+## Stories — share EVERY post to Instagram + Facebook stories
+- Right after scheduling each post, schedule a story for 15 minutes later (10:15 for am, 18:15 for pm) with Metricool `createScheduledPost`, providers [instagram, facebook], instagramData type STORY, facebookData type STORY, NO `text`, autoPublish true.
+- Reel → the story media is the same reel.mp4 raw URL.
+- Carousel → render a story image first: `POST_THEME=<same theme> python3 tools/make_story.py posts/<date>-am/slide_01.jpg posts/<date>-am/story.jpg`, commit/push it with the post, and use its raw URL.
+- If Facebook refuses the story, still schedule the Instagram one and report it.
+
 ## Sources (mandatory)
 Every fact must come from an approved reference — standard medical textbooks (Davidson's, Harrison's, Oxford Handbook of Clinical Medicine, Kumar & Clark, Nelson, Williams Obstetrics) or official bodies (WHO, NHS, NICE, CDC, ECDC, Mayo Clinic, Egyptian Ministry of Health).
 - Before writing a spec, use WebSearch/WebFetch to open the official page for the topic and check EVERY sentence against it. Drop any claim you cannot match to the source; do not mark "warning" items as "emergency" unless the source says so.
@@ -51,4 +57,4 @@ Every fact must come from an approved reference — standard medical textbooks (
      If it is rejected with a list of candidates, retry once with the numeric id of a fitting instrumental candidate.
      If it is rejected with a 403/catalog-unavailable error, schedule without audioConfiguration (the video already carries our own original music).
    - If a provider fails (e.g. facebook disconnected), still schedule for the networks that work and report which one failed.
-10. Check it appears in `getScheduledPosts`. If anything fails, say exactly what failed.
+10. Schedule the matching story (see Stories). Check post AND story appear in `getScheduledPosts`. If anything fails, say exactly what failed.
