@@ -13,8 +13,11 @@ Folders/specs are named `<date>-am` and `<date>-pm` (e.g. posts/2026-10-21-am, s
 - WHAT THE AUDIENCE NEEDS NOW: before choosing topics, (1) WebSearch what health topics are in the news / trending in Egypt this week and what season it is (heat, flu season, exams, Ramadan, school start, outbreaks, viral myths) and pick topics people are searching for right now; (2) check Metricool analytics for the account's recent posts (getAnalyticsDataByMetrics — reach, saves, shares, plays) and lean toward the formats/topics that performed best.
 - MUSIC: Instagram's publishing API only allows music on reels, not carousels (Metricool returns AUDIO_NOT_APPLICABLE). Do NOT send audioConfiguration on carousels. In the final message, suggest one fitting, currently popular song name per post that the user can add by hand in the Instagram app if they want.
 
-## Stories — do NOT upload stories
-The user wants each post SHARED to the story (Instagram's own "add post to story" button), not re-uploaded as a new story. The publishing API cannot press that button, so never schedule STORY posts. In the final message, remind the user to tap "share to story" on each post after it goes live.
+## Stories — a teaser story for EVERY carousel (cover only, not the whole post)
+- After rendering a carousel, make its story: `POST_THEME=<same theme> python3 tools/make_story.py posts/<date>-<slot>/slide_01.jpg posts/<date>-<slot>/story.jpg "<teaser>"`.
+  The teaser is ONE short Egyptian-Arabic curiosity line that makes people open the profile without giving the answer, different every time (e.g. "الخرافة رقم ٤ أغلبنا مصدقها", "٦ علامات لازم كل أم وأب يعرفوها", "الغلطة رقم ٢ بنعملها كل يوم"). The image already says "بوست جديد", points at the name ("اضغط على اسمي") and says "البوست كامل على البروفايل".
+- Commit/push story.jpg with the post, then schedule it 15 minutes after the post (10:15 / 18:15) with `createScheduledPost`, providers [instagram, facebook], instagramData type STORY, facebookData type STORY, NO text, autoPublish true, media = story.jpg raw URL.
+- If Facebook refuses the story, still schedule the Instagram one and report it.
 
 ## Sources (mandatory)
 Every fact must come from an approved reference — standard medical textbooks (Davidson's, Harrison's, Oxford Handbook of Clinical Medicine, Kumar & Clark, Nelson, Williams Obstetrics) or official bodies (WHO, NHS, NICE, CDC, ECDC, Mayo Clinic, Egyptian Ministry of Health).
@@ -47,4 +50,4 @@ Every fact must come from an approved reference — standard medical textbooks (
 9. Schedule with Metricool `createScheduledPost` for `<date>T10:00:00+03:00` (am) or `<date>T18:00:00+03:00` (pm), autoPublish true, providers [instagram, facebook]:
    - carousel: media = all slide JPG raw URLs in order, instagramData type POST, facebookData type POST.
    - If a provider fails (e.g. facebook disconnected), still schedule for the networks that work and report which one failed.
-10. Check both posts appear in `getScheduledPosts` (no stories). If anything fails, say exactly what failed.
+10. Schedule each post's teaser story (see Stories). Check the 2 posts and 2 stories appear in `getScheduledPosts`. If anything fails, say exactly what failed.
