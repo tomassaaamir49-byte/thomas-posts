@@ -85,8 +85,10 @@ def background(accent):
         c = tuple(int(WHITE[i] * (1 - t) + SKY[i] * t) for i in range(3))
         d.line([(0, y), (W, y)], fill=c)
     # decorative circles
-    d.ellipse([W - 260, -200, W + 200, 260], fill=(214, 232, 255))
-    d.ellipse([-180, H - 520, 220, H - 120], fill=(222, 237, 255))
+    c1 = tuple(int(SKY[i] * 0.82 + BLUE[i] * 0.18) for i in range(3))
+    c2 = tuple(int(SKY[i] * 0.9 + BLUE[i] * 0.1) for i in range(3))
+    d.ellipse([W - 260, -200, W + 200, 260], fill=c1)
+    d.ellipse([-180, H - 520, 220, H - 120], fill=c2)
     # top accent bar
     d.rectangle([0, 0, W, 14], fill=accent)
     return img, d
@@ -191,6 +193,8 @@ def slide_cta(s, i, n):
     ])
     fa, fs = font(46, 800), font(36, 600)
     for a, sub in actions:
+        if y + 130 > H - (240 if s.get("source") else 170):
+            break  # no room left above the source line / footer
         d.rounded_rectangle([M, y, W - M, y + 130], radius=30, fill=WHITE, outline=(205, 222, 245), width=3)
         d.ellipse([W - M - 100, y + 35, W - M - 40, y + 95], fill=BLUE)
         cx, cy = W - M - 70, y + 65
