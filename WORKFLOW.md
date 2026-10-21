@@ -3,22 +3,18 @@
 Account owner: توماس سمير فوزي, طالب طب بشري (medical student — NOT a doctor).
 Goal: grow followers, reach and engagement with Egyptian-Arabic medical awareness for the general public.
 Metricool brand (blogId): 7301767. Networks: instagram AND facebook (page "توماس سمير طالب طب بشري"). Timezone: Africa/Cairo.
-TWO posts per day: morning slot `am` = CAROUSEL at 10:00, evening slot `pm` = REEL at 18:00.
+TWO CAROUSELS per day (user's choice, no reels): morning slot `am` at 10:00 and evening slot `pm` at 18:00 — both are carousels.
 Folders/specs are named `<date>-am` and `<date>-pm` (e.g. posts/2026-10-21-am, specs/2026-10-21-pm.json).
 
-Reels get original synthesized music automatically (tools/make_music.py); never add copyrighted songs.
 
 ## Freshness — every post must feel different from the one before it
 - THEME: render each post with a different colour theme than the previous post: `POST_THEME=<ocean|emerald|violet|sunset|rose|teal> python3 tools/...`. Record the theme in topics.md and never reuse the previous post's theme.
 - ANGLE: never use the same content angle (myth/red-flags/mistakes/body-explainer/first-aid/quiz "صح ولا غلط"/numbers & facts) twice in a row; vary the hook style (question, shocking fact, "غلطة بيعملها ٩٠٪", challenge).
 - WHAT THE AUDIENCE NEEDS NOW: before choosing topics, (1) WebSearch what health topics are in the news / trending in Egypt this week and what season it is (heat, flu season, exams, Ramadan, school start, outbreaks, viral myths) and pick topics people are searching for right now; (2) check Metricool analytics for the account's recent posts (getAnalyticsDataByMetrics — reach, saves, shares, plays) and lean toward the formats/topics that performed best.
-- MUSIC: reels use a song from Instagram's own music library (audioConfiguration, see step 9) — pick a currently popular/trending track whose mood fits the topic; use a different song from the previous reel. Only if Instagram refuses the audio, fall back to the video's built-in original music.
+- MUSIC: Instagram's publishing API only allows music on reels, not carousels (Metricool returns AUDIO_NOT_APPLICABLE). Do NOT send audioConfiguration on carousels. In the final message, suggest one fitting, currently popular song name per post that the user can add by hand in the Instagram app if they want.
 
-## Stories — share EVERY post to Instagram + Facebook stories
-- Right after scheduling each post, schedule a story for 15 minutes later (10:15 for am, 18:15 for pm) with Metricool `createScheduledPost`, providers [instagram, facebook], instagramData type STORY, facebookData type STORY, NO `text`, autoPublish true.
-- Reel → the story media is the same reel.mp4 raw URL.
-- Carousel → render a story image first: `POST_THEME=<same theme> python3 tools/make_story.py posts/<date>-am/slide_01.jpg posts/<date>-am/story.jpg`, commit/push it with the post, and use its raw URL.
-- If Facebook refuses the story, still schedule the Instagram one and report it.
+## Stories — do NOT upload stories
+The user wants each post SHARED to the story (Instagram's own "add post to story" button), not re-uploaded as a new story. The publishing API cannot press that button, so never schedule STORY posts. In the final message, remind the user to tap "share to story" on each post after it goes live.
 
 ## Sources (mandatory)
 Every fact must come from an approved reference — standard medical textbooks (Davidson's, Harrison's, Oxford Handbook of Clinical Medicine, Kumar & Clark, Nelson, Williams Obstetrics) or official bodies (WHO, NHS, NICE, CDC, ECDC, Mayo Clinic, Egyptian Ministry of Health).
@@ -29,7 +25,7 @@ Every fact must come from an approved reference — standard medical textbooks (
 ## Each run
 1. Find the next Cairo date (tomorrow or later) that does not yet have BOTH `posts/<date>-am` and `posts/<date>-pm`.
    Prepare whichever of the two slots is missing for that date (normally both). Never prepare a date in the past or redo an existing folder.
-2. Slot `am` is always a carousel; slot `pm` is always a reel. The two topics of the same day must be different.
+2. Both slots are carousels. The two topics and the two colour themes of the same day must be different, and the evening one must use a different angle than the morning one.
 3. For each slot pick a NEW topic (and its approved source) not listed in `topics.md`. Rotate content angles that get reach:
    - خرافات طبية مصدقها (myth vs. fact)
    - علامات خطر لازم تروح فيها للطوارئ (red flags)
@@ -44,17 +40,11 @@ Every fact must come from an approved reference — standard medical textbooks (
    - Spec also holds `"caption"`: first line = hook with the topic keyword; then save/send/comment CTA; "تابعني عشان معلومة طبية جديدة كل يوم."; the line "⚠️ المحتوى للتوعية فقط ومش بديل عن استشارة الطبيب."; 3–5 Arabic hashtags.
 5. Medical safety: only well-established facts. No drug doses, no prescriptions, no brand names, no diagnosis promises, nothing that discourages seeing a doctor. When in doubt, pick another topic.
 6. Render:
-   - carousel: `python3 tools/make_carousel.py specs/<date>-am.json posts/<date>-am`
-   - reel: `python3 tools/make_reel.py specs/<date>-pm.json posts/<date>-pm`
+   - `POST_THEME=<theme> python3 tools/make_carousel.py specs/<date>-<slot>.json posts/<date>-<slot>` (once per slot)
    Look at the output (open slide images / extract a few frames with ffmpeg) and fix any overflow or broken text before publishing.
 7. Append `- <date>-<slot> | carousel/reel | <topic>` to `topics.md`, commit, push to `main`.
 8. Confirm the raw URLs return 200: `https://raw.githubusercontent.com/tomassaaamir49-byte/thomas-posts/main/posts/<date>-<slot>/...`
 9. Schedule with Metricool `createScheduledPost` for `<date>T10:00:00+03:00` (am) or `<date>T18:00:00+03:00` (pm), autoPublish true, providers [instagram, facebook]:
    - carousel: media = all slide JPG raw URLs in order, instagramData type POST, facebookData type POST.
-   - reel: media = reel.mp4 raw URL, videoThumbnailUrl = cover.jpg raw URL, instagramData type REEL + showReelOnFeed true, facebookData type REEL.
-   - Reels only — try Instagram's licensed music library first: add instagramData.audioConfiguration
-     {"audioId": "<search term for a calm/emotional or trending instrumental>", "audioVolume": 80, "videoVolume": 0}.
-     If it is rejected with a list of candidates, retry once with the numeric id of a fitting instrumental candidate.
-     If it is rejected with a 403/catalog-unavailable error, schedule without audioConfiguration (the video already carries our own original music).
    - If a provider fails (e.g. facebook disconnected), still schedule for the networks that work and report which one failed.
-10. Schedule the matching story (see Stories). Check post AND story appear in `getScheduledPosts`. If anything fails, say exactly what failed.
+10. Check both posts appear in `getScheduledPosts` (no stories). If anything fails, say exactly what failed.
