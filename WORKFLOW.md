@@ -20,6 +20,28 @@ Folders/specs are named `<date>-am` and `<date>-pm` (e.g. posts/2026-10-21-am, s
 - Commit/push story.jpg with the post, then schedule it 15 minutes after the post (10:15 / 18:15) with `createScheduledPost`, providers [instagram, facebook], instagramData type STORY, facebookData type STORY, NO text, autoPublish true, media = story.jpg raw URL.
 - If Facebook refuses the story, still schedule the Instagram one and report it.
 
+## Performance loop — learn from every post (do this FIRST each run)
+1. Pull Instagram post stats for the last 14 days: `getAnalyticsDataByMetrics(brandId=7301767, metrics=["IGPO02","IGPO06","IGPO07","IGPO14","IGPO28","IGPO13","IGPO08","IGPO15","IGPO27","IGPO29"])` (date, url, type, reach, views, likes, comments, saves, shares, follows).
+2. Add/refresh each post's row in `performance.md` (match by date/time to topics.md) and compute its score.
+3. Before choosing tomorrow's topics, read performance.md: repeat what is in the top third (topic family, angle, hook style, audience, slide count), avoid what is in the bottom third, and try ONE new experiment per day (new hook style or format) so the account keeps improving. Write one line under "## Lessons" in performance.md each run (what worked / what to try).
+
+## Quality bar — every carousel must pass ALL of these before it is scheduled
+1. Cover = scroll-stopper: ≤ 9 words, contains a number OR a direct question OR a bold claim, and names a specific person/problem ("لو انت أم…", "لو بتذاكر…"). A curiosity gap: it promises something the reader must swipe to get.
+2. Slide 2 delivers value immediately — no intro, no "في البوست ده هنعرف".
+3. One idea per slide, title ≤ 7 words, body ≤ 25 words, plain Egyptian Arabic a 15-year-old understands.
+4. 7–9 slides total (more dwell time; Instagram re-shows carousels from slide 2 to people who skipped).
+5. At least one surprising/counter-intuitive fact that makes people say "مكنتش أعرف".
+6. A save trigger: second-to-last slide is a `checklist` slide ("الخلاصة في صورة واحدة" / "احفظها") summarising the whole post in 3–5 ticks.
+7. A share trigger aimed at a specific person in the CTA + caption ("ابعتها لماما"، "منشن صاحبك اللي…").
+8. A comment prompt with an easy answer (a number, a word, an emoji): "قولّي رقم الغلطة اللي بتعملها".
+9. Caption: first line = keyword + hook (< 125 characters), then value, CTA, source, disclaimer, 3–5 relevant Arabic hashtags.
+10. Visually checked: no overflow, readable at phone size, colour theme different from the previous post.
+If any item fails, fix it before scheduling. Rewrite the hook up to 3 times and keep the strongest.
+
+## Carousel formats to rotate (never the same format twice in a row)
+numbered list (٥ علامات / ٣ أكلات) · myth vs fact · quiz "صح ولا غلط" (question slide → answer slide) · mistakes ("غلطات بنعملها") · "إيه اللي بيحصل لجسمك لو…" step by step · comparison ("الفرق بين البرد والإنفلونزا") · first aid do/don't · "اسأل نفسك" self-check checklist.
+Slide types available: `cover`, `point` (with `num`), `checklist` (title + `items`), `cta`.
+
 ## Sources (mandatory)
 Every fact must come from an approved reference — standard medical textbooks (Davidson's, Harrison's, Oxford Handbook of Clinical Medicine, Kumar & Clark, Nelson, Williams Obstetrics) or official bodies (WHO, NHS, NICE, CDC, ECDC, Mayo Clinic, Egyptian Ministry of Health).
 - Before writing a spec, use WebSearch/WebFetch to open the official page for the topic and check EVERY sentence against it. Drop any claim you cannot match to the source; do not mark "warning" items as "emergency" unless the source says so.

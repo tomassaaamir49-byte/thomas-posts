@@ -214,6 +214,28 @@ def slide_cta(s, i, n):
     return img
 
 
+def slide_checklist(s, i, n):
+    """Summary slide people save: title + short checked items ("احفظها")."""
+    img, d = background(BLUE)
+    counter(d, i, n)
+    tag(d, s.get("kicker", "احفظ البوست"), BLUE)
+    y = draw_block(d, s["title"], font(70, 900), 220, NAVY, gap=1.3) + 40
+    fi = font(44, 700)
+    for item in s.get("items", []):
+        lines = wrap(d, item, fi, W - 2 * M - 120)
+        h = len(lines) * int(fi.size * 1.4) + 40
+        if y + h > H - 190:
+            break
+        d.rounded_rectangle([M, y, W - M, y + h], radius=26, fill=WHITE, outline=(205, 222, 245), width=3)
+        cx, cy = W - M - 50, y + h / 2
+        d.ellipse([cx - 26, cy - 26, cx + 26, cy + 26], fill=BLUE)
+        d.line([(cx - 11, cy), (cx - 3, cy + 9), (cx + 12, cy - 9)], fill=WHITE, width=6, joint="curve")
+        draw_block(d, item, fi, y + 20, INK, maxw=W - 2 * M - 120, gap=1.4, right=W - M - 95)
+        y += h + 18
+    footer(d)
+    return img
+
+
 def main(spec_path, outdir):
     spec = json.load(open(spec_path, encoding="utf-8"))
     os.makedirs(outdir, exist_ok=True)
@@ -224,7 +246,8 @@ def main(spec_path, outdir):
     for i, s in enumerate(slides, 1):
         if s["type"] == "cta" and spec_source and "source" not in s:
             s = dict(s, source=spec_source)
-        fn = {"cover": slide_cover, "point": slide_point, "cta": slide_cta}[s["type"]]
+        fn = {"cover": slide_cover, "point": slide_point, "cta": slide_cta,
+              "checklist": slide_checklist}[s["type"]]
         img = fn(s, i, n)
         p = os.path.join(outdir, f"slide_{i:02d}.jpg")  # Instagram publishing accepts JPEG
         img.convert("RGB").save(p, "JPEG", quality=92, optimize=True)
