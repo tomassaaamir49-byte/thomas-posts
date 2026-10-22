@@ -3,9 +3,15 @@
 Account owner: توماس سمير فوزي, طالب طب بشري (medical student — NOT a doctor).
 Goal: grow followers, reach and engagement with Egyptian-Arabic medical awareness for the general public.
 Metricool brand (blogId): 7301767. Networks: instagram AND facebook (page "توماس سمير طالب طب بشري"). Timezone: Africa/Cairo.
-TWO CAROUSELS per day (user's choice, no reels): morning slot `am` at 10:00 and evening slot `pm` at 18:00 — both are carousels.
+TWO CAROUSELS per day (user's choice, no reels): a morning slot `am` (08:30–13:00) and an evening slot `pm` (17:00–23:00). The exact time per network is chosen from the post's target audience — read AUDIENCE.md (who is online when, which network, how to talk to them). Default 10:00 / 18:00 only when the audience is mixed.
 Folders/specs are named `<date>-am` and `<date>-pm` (e.g. posts/2026-10-21-am, specs/2026-10-21-pm.json).
 
+
+## Audience first (read AUDIENCE.md every run)
+- Decide each post's `audience` (youth | parents | older | general) BEFORE writing it, and write the whole post in that audience's tone (AUDIENCE.md → "How to talk to each audience"). Plain Egyptian Arabic understood from Aswan to Alexandria; inclusive of every income level; no pity, shame, mockery or stereotypes.
+- Pick `ig_time` and `fb_time` for that audience from AUDIENCE.md, adjusted by what performance.md shows works. If they differ, schedule Instagram and Facebook as two separate posts, each with its own story 15 minutes later.
+- Across the week, cover all audiences (youth, parents, older adults) — don't serve only one group.
+- Every Friday: refresh AUDIENCE.md with the account's demographics (IGAG01–03) and what performance.md says about times/tones, and try one new time slot that week.
 
 ## Freshness — every post must feel different from the one before it
 - THEME: render each post with a different colour theme than the previous post: `POST_THEME=<ocean|emerald|violet|sunset|rose|teal> python3 tools/...`. Record the theme in topics.md and never reuse the previous post's theme.
@@ -22,7 +28,7 @@ Folders/specs are named `<date>-am` and `<date>-pm` (e.g. posts/2026-10-21-am, s
 
 ## Performance loop — learn from every post (do this FIRST each run)
 1. Pull Instagram post stats for the last 14 days: `getAnalyticsDataByMetrics(brandId=7301767, metrics=["IGPO02","IGPO06","IGPO07","IGPO14","IGPO28","IGPO13","IGPO08","IGPO15","IGPO27","IGPO29"])` (date, url, type, reach, views, likes, comments, saves, shares, follows).
-2. Add/refresh each post's row in `performance.md` (match by date/time to topics.md) and compute its score.
+2. Add/refresh each post's row in `performance.md` (match by date/time to topics.md) and compute its score. Record audience, ig_time, fb_time and tone for each post too, so the loop learns which time and tone work for which audience.
 3. Before choosing tomorrow's topics, read performance.md: repeat what is in the top third (topic family, angle, hook style, audience, slide count), avoid what is in the bottom third, and try ONE new experiment per day (new hook style or format) so the account keeps improving. Write one line under "## Lessons" in performance.md each run (what worked / what to try).
 
 ## Quality bar — every carousel must pass ALL of these before it is scheduled
@@ -70,7 +76,7 @@ Every fact must come from an approved reference — standard medical textbooks (
    Look at the output (open slide images / extract a few frames with ffmpeg) and fix any overflow or broken text before publishing.
 7. Append `- <date>-<slot> | carousel/reel | <topic>` to `topics.md`, commit, push to `main`.
 8. Confirm the raw URLs return 200: `https://raw.githubusercontent.com/tomassaaamir49-byte/thomas-posts/main/posts/<date>-<slot>/...`
-9. Schedule with Metricool `createScheduledPost` for `<date>T10:00:00+03:00` (am) or `<date>T18:00:00+03:00` (pm), autoPublish true, providers [instagram, facebook]:
+9. Schedule with Metricool `createScheduledPost` at the audience-based time chosen above (Instagram and Facebook may be separate posts at different times), autoPublish true, providers [instagram, facebook]:
    - carousel: media = all slide JPG raw URLs in order, instagramData type POST, facebookData type POST.
    - If a provider fails (e.g. facebook disconnected), still schedule for the networks that work and report which one failed.
 10. Schedule each post's teaser story (see Stories). Check the 2 posts and 2 stories appear in `getScheduledPosts`. If anything fails, say exactly what failed.
