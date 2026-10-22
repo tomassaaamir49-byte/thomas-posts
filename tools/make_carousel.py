@@ -76,7 +76,29 @@ def block_height(draw, text, f, maxw=W - 2 * M, gap=1.45):
     return len(wrap(draw, text, f, maxw)) * int(f.size * gap)
 
 
-def background(accent):
+PHOTO = os.environ.get("POST_PHOTO", os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "assets", "thomas.jpg"))
+_photo_cache = {}
+
+
+def _photo_layer(mode):
+    """Thomas's photo sized for the slide. cover: him in the lower part; inner: full frame."""
+    if mode in _photo_cache:
+        return _photo_cache[mode]
+    ph = Image.open(PHOTO).convert("RGB")
+    s = W / ph.width
+    ph = ph.resize((W, int(ph.height * s)), Image.LANCZOS)
+    face_y = int(ph.height * 0.27)          # face sits ~27% down the original photo
+    target = 900 if mode == "cover" else 560
+    canvas = Image.new("RGB", (W, H), SKY)
+    off = target - face_y
+    if mode != "cover":
+        off = max(H - ph.height, min(0, off))  # inner slides: fill the whole frame
+    canvas.paste(ph, (0, off))
+    _photo_cache[mode] = canvas
+    return canvas
+
+
+def background(accent, mode="inner"):
     img = Image.new("RGB", (W, H), WHITE)
     d = ImageDraw.Draw(img)
     # soft vertical gradient
@@ -84,11 +106,33 @@ def background(accent):
         t = y / H
         c = tuple(int(WHITE[i] * (1 - t) + SKY[i] * t) for i in range(3))
         d.line([(0, y), (W, y)], fill=c)
-    # decorative circles
-    c1 = tuple(int(SKY[i] * 0.82 + BLUE[i] * 0.18) for i in range(3))
-    c2 = tuple(int(SKY[i] * 0.9 + BLUE[i] * 0.1) for i in range(3))
-    d.ellipse([W - 260, -200, W + 200, 260], fill=c1)
-    d.ellipse([-180, H - 520, 220, H - 120], fill=c2)
+    if PHOTO and os.path.exists(PHOTO):
+        # photo behind everything, under a tinted veil so the text stays crisp
+        ph = _photo_layer(mode)
+        veil = img.copy()
+        if mode == "cover":
+            # opaque behind the text (top), clear over the face, light again behind the footer
+            mask = Image.new("L", (W, H))
+            md = ImageDraw.Draw(mask)
+            for y in range(H):
+                if y < 560:
+                    a = 238
+                elif y < 760:
+                    a = int(238 - (y - 560) / 200 * 205)
+                elif y < 1120:
+                    a = 33
+                else:
+                    a = int(33 + (y - 1120) / 230 * 200)
+                md.line([(0, y), (W, y)], fill=a)
+        else:
+            mask = Image.new("L", (W, H), 212)  # ~83% veil: text crisp, face still visible
+        img = Image.composite(veil, ph, mask)
+        d = ImageDraw.Draw(img)
+    else:
+        c1 = tuple(int(SKY[i] * 0.82 + BLUE[i] * 0.18) for i in range(3))
+        c2 = tuple(int(SKY[i] * 0.9 + BLUE[i] * 0.1) for i in range(3))
+        d.ellipse([W - 260, -200, W + 200, 260], fill=c1)
+        d.ellipse([-180, H - 520, 220, H - 120], fill=c2)
     # top accent bar
     d.rectangle([0, 0, W, 14], fill=accent)
     return img, d
@@ -121,25 +165,28 @@ def tag(d, text, color, y=60):
 
 def slide_cover(s, i, n):
     accent = RED if s.get("alert") else BLUE
-    img, d = background(accent)
+    img, d = background(accent, mode="cover")
     counter(d, i, n)
     if s.get("kicker"):
         tag(d, s["kicker"], accent)
     ft, fb = font(92, 900), font(46, 600)
     th = block_height(d, s["title"], ft, gap=1.3)
     bh = block_height(d, s.get("body", ""), fb) if s.get("body") else 0
-    y = (H - 150 - th - bh - 60) / 2 + 40
+    y = 150 if (PHOTO and os.path.exists(PHOTO)) else (H - 150 - th - bh - 60) / 2 + 40
     y = draw_block(d, s["title"], ft, y, NAVY, gap=1.3)
     d.rounded_rectangle([W - M - 160, y + 25, W - M, y + 37], radius=6, fill=accent)
+    yb = y + 37
     if s.get("body"):
-        draw_block(d, s["body"], fb, y + 70, INK)
-    # swipe hint
+        yb = draw_block(d, s["body"], fb, y + 70, INK)
+    # swipe hint (under the text when the photo fills the lower half)
     f = font(38, 800)
     hint = "اسحب للشمال"
     tw = d.textlength(hint, font=f, direction="rtl")
-    x0 = (W - tw - 80) / 2
-    d.text((x0 + 80, H - 235), hint, font=f, fill=accent, direction="rtl")
-    ay = H - 207
+    has_photo = PHOTO and os.path.exists(PHOTO)
+    x0 = W - M - tw - 80 if has_photo else (W - tw - 80) / 2
+    hy = yb + 20 if has_photo else H - 235
+    d.text((x0 + 80, hy), hint, font=f, fill=accent, direction="rtl")
+    ay = hy + 28
     d.line([(x0, ay), (x0 + 55, ay)], fill=accent, width=6)
     d.polygon([(x0 - 6, ay), (x0 + 18, ay - 16), (x0 + 18, ay + 16)], fill=accent)
     footer(d)

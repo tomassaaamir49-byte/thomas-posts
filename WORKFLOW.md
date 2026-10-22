@@ -47,6 +47,7 @@ If any item fails, fix it before scheduling. Rewrite the hook up to 3 times and 
 ## Carousel formats to rotate (never the same format twice in a row)
 numbered list (٥ علامات / ٣ أكلات) · myth vs fact · quiz "صح ولا غلط" (question slide → answer slide) · mistakes ("غلطات بنعملها") · "إيه اللي بيحصل لجسمك لو…" step by step · comparison ("الفرق بين البرد والإنفلونزا") · first aid do/don't · "اسأل نفسك" self-check checklist.
 Slide types available: `cover`, `point` (with `num`), `checklist` (title + `items`), `cta`.
+Every slide uses Thomas's photo (assets/thomas.jpg) as the background automatically: on the cover he is clearly visible in the lower half with the text on top; on the other slides the photo sits behind a light veil so the text stays crisp. Keep cover text short so it never covers his face.
 
 ## Sources (mandatory)
 Every fact must come from an approved reference — standard medical textbooks (Davidson's, Harrison's, Oxford Handbook of Clinical Medicine, Kumar & Clark, Nelson, Williams Obstetrics) or official bodies (WHO, NHS, NICE, CDC, ECDC, Mayo Clinic, Egyptian Ministry of Health).
