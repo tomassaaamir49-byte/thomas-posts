@@ -8,7 +8,7 @@ Folders/specs are named `<date>-am` and `<date>-pm` (e.g. posts/2026-10-21-am, s
 
 
 ## Audience first (read AUDIENCE.md every run)
-- Decide each post's `audience` (youth | parents | older | general) BEFORE writing it, and write the whole post in that audience's tone (AUDIENCE.md → "How to talk to each audience"). Plain Egyptian Arabic understood from Aswan to Alexandria; inclusive of every income level; no pity, shame, mockery or stereotypes.
+- Decide each post's `audience` (youth | parents | older | general) BEFORE writing it, and write the whole post in that audience's tone (AUDIENCE.md → "How to talk to each audience"). Premium, elegant brand voice (AUDIENCE.md → "Brand voice"): refined Egyptian Arabic, calm and confident, no slang, no references to regions, villages or social class; no pity, shame, mockery or stereotypes.
 - Pick `ig_time` and `fb_time` for that audience from AUDIENCE.md, adjusted by what performance.md shows works. If they differ, schedule Instagram and Facebook as two separate posts, each with its own story 15 minutes later.
 - Across the week, cover all audiences (youth, parents, older adults) — don't serve only one group.
 - Every Friday: refresh AUDIENCE.md with the account's demographics (IGAG01–03) and what performance.md says about times/tones, and try one new time slot that week.

@@ -27,15 +27,18 @@ Account activity data (Metricool best-time, both networks): strongest 10:00–12
 - Morning slot must stay between 08:30 and 13:00, evening slot between 17:00 and 23:00, at least 5 hours apart.
 - When the best time differs by network, schedule Instagram and Facebook as TWO separate Metricool posts at their own times (same media + caption). Each story goes 15 minutes after its own network's post.
 
-## How to talk to each audience (same facts, different packaging)
-- **Students / youth:** short, quick, a bit of light humour, their world (مذاكرة، سهر، جيم، قهوة ومشروبات طاقة، موبايل). Hooks: challenge, "غلطة بتعملها كل يوم".
-- **Parents:** calm and reassuring, practical steps, "إمتى تقلق وإمتى تطمن". Hooks: "لو انت أم/أب…".
-- **Older adults:** respectful (حضرتك when addressing directly), simple words, one clear action per slide, no slang or English, mention the family ("ابعتها لماما وبابا").
-- **Upper Egypt and Delta, cities and villages:** use general Egyptian Arabic everyone understands — avoid Cairo-only slang and English words; explain any medical term in plain words. Examples should fit everyone (البيت، الغيط، الشغل، المدرسة), not only city life.
-- **Every income level:** advice must be doable for free or cheap (مية، نوم، أكل بيتي، فول وعدس وخضار موسمي) — never assume a private doctor, car, AC, gym or expensive products. Mention free public options where they exist (الوحدة الصحية، مستشفى الحكومة، الإسعاف ١٢٣) after verifying them.
-- **Traditions and home remedies:** correct them with respect — "ستك وجدتك كانوا بيعملوا كده من حبهم، بس العلم دلوقتي بيقول…". Never mock.
-- **Never:** pity, shame, blame, class or regional stereotypes, "الناس الجاهلة", scare tactics, body shaming. Goal = include, reassure, and help everyone.
-- Sensitive topics (periods, PCOS, sexual health, mental health): tactful, modest wording and visuals suitable for conservative families.
+## Brand voice — premium, elegant, respectful (applies to every audience)
+- The account is a premium medical brand: polished, calm, confident, trustworthy — like a refined clinic, never like a street ad.
+- Language: clean, elegant Egyptian Arabic (عامية راقية) — clear and warm, no slang, no vulgar or crowd-pleasing jokes, no exaggeration or panic, no English words. Medical terms explained simply and precisely.
+- Examples and imagery: modern everyday life (البيت، الشغل، الجامعة، المدرسة، الجيم، السفر، المكتب). Do NOT reference regions, villages, farming, or social class at all.
+- Never: pity, shame, blame, mockery, stereotypes, scare tactics, body shaming, or "cheap" framing.
+- Sensitive topics (periods, PCOS, sexual or mental health): tactful, dignified wording and visuals.
+
+## How to talk to each audience (same premium voice, different focus)
+- **Students / youth:** sharp and smart, a touch of wit, their world (مذاكرة، سهر، جيم، قهوة، موبايل، مشروبات طاقة). Hooks: challenge, "غلطة بتعملها كل يوم".
+- **Parents:** calm, reassuring, practical: "إمتى تقلق وإمتى تطمن". Hooks: "لو انت أم/أب…".
+- **Older adults:** respectful (حضرتك when addressing directly), simple and clear, one action per slide, and mention the family ("ابعتها لماما وبابا").
+- **Traditions and old habits:** correct them gracefully — "عادة قديمة كلنا اتربينا عليها، بس العلم دلوقتي بيقول…". Never mock.
 
 ## What every spec must record (for learning)
 In the spec and in topics.md / performance.md add: `audience` (youth | parents | older | general), `ig_time`, `fb_time`, `tone`. The performance loop compares score by audience × time × tone and moves future times/tones toward what wins — and tries one new time slot per week to keep testing.
