@@ -25,6 +25,7 @@ Folders/specs are named `<date>-am` and `<date>-pm` (e.g. posts/2026-10-21-am, s
   The teaser is ONE short Egyptian-Arabic curiosity line that makes people open the profile without giving the answer, different every time (e.g. "الخرافة رقم ٤ أغلبنا مصدقها", "٦ علامات لازم كل أم وأب يعرفوها", "الغلطة رقم ٢ بنعملها كل يوم"). The image already says "بوست جديد", points at the name ("اضغط على اسمي") and says "البوست كامل على البروفايل".
 - Commit/push story.jpg with the post, then schedule it 15 minutes after the post (10:15 / 18:15) with `createScheduledPost`, providers [instagram, facebook], instagramData type STORY, facebookData type STORY, NO text, autoPublish true, media = story.jpg raw URL.
 - If Facebook refuses the story, still schedule the Instagram one and report it.
+- Failure check (start of every run): `getScheduledPosts` for today and yesterday; any provider with status ERROR (Instagram stories sometimes fail with "media cannot be found") → if its time slot hasn't passed by more than a few hours, reschedule it once from the GitHub raw URL, and always list every failure in the final message.
 
 ## Performance loop — learn from every post (do this FIRST each run)
 1. Pull Instagram post stats for the last 14 days: `getAnalyticsDataByMetrics(brandId=7301767, metrics=["IGPO02","IGPO06","IGPO07","IGPO14","IGPO28","IGPO13","IGPO08","IGPO15","IGPO27","IGPO29"])` (date, url, type, reach, views, likes, comments, saves, shares, follows).
