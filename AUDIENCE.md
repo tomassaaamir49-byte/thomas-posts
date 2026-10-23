@@ -2,9 +2,10 @@
 
 Researched 2026-10-22. Re-check the account's own data every Friday and update this file.
 
-## Who is actually following (Metricool, Instagram, Oct 2026, ~290 followers)
-- 18–24: ~68% (mostly young men, then young women) → students / young adults are the core today.
-- 25–34: ~18% · 13–17: ~7% · 35+: ~8%.
+## Who is actually following (Metricool IGAG, refreshed 2026-10-23, ~293 followers)
+- 18–24: ~68% (men 138, women 52) → students / young adults are the core today.
+- 25–34: ~17% (men 38, women 13) · 13–17: ~7% · 35+: ~8% (35–44: 13, 45–54: 8, 65+: 1).
+- Gender overall: ~70% men, ~27% women → parent topics should speak to fathers too ("لو انت أم أو أب").
 - Goal: keep the young core AND grow parents (25–40) and older adults, mainly through Facebook.
 Refresh weekly with `getAnalyticsDataByMetrics(metrics=["IGAG01","IGAG02","IGAG03"])`.
 
@@ -26,6 +27,12 @@ Account activity data (Metricool best-time, both networks): strongest 10:00–12
 - Ramadan: after iftar (21:00–23:00) and before suhoor (01:00–02:30). Summer holidays: shift youth posts later (22:00).
 - Morning slot must stay between 08:30 and 13:00, evening slot between 17:00 and 23:00, at least 5 hours apart.
 - When the best time differs by network, schedule Instagram and Facebook as TWO separate Metricool posts at their own times (same media + caption). Each story goes 15 minutes after its own network's post.
+
+## What the data says so far (refreshed 2026-10-23)
+- Reach: 10:00 morning posts reach the most people (87–177) vs 18:00 (55–99).
+- Engagement: the quiz "صح ولا غلط" format at 18:00 scored 3× any other post (only post with shares). Tone "practical + playful quiz" beats "calm list".
+- Comments are still 0 on every post → keep testing easier comment asks (a number).
+- This week's new time tests: IG 21:00 (23-pm, youth), IG 11:00 / FB 10:30 on a Saturday (24-am, parents). Compare next Friday.
 
 ## Brand voice — premium, elegant, respectful (applies to every audience)
 - The account is a premium medical brand: polished, calm, confident, trustworthy — like a refined clinic, never like a street ad.

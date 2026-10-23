@@ -15,6 +15,13 @@ and the flu vaccine is available for priority groups (over 65, children, pregnan
 - قمل المدارس: الصح والغلط في العلاج (school return)
 - غسيل الإيد صح: ٢٠ ثانية بتفرق إزاي
 
+### Added 2026-10-23 (weekly refresh)
+Egyptian news this autumn: MoH warns of 7 winter respiratory viruses (flu, RSV, adenovirus…), seasonal flu vaccine 2026 now in vaccination centres, warnings against random antibiotic use, measles vaccination reminders for children.
+- الفيروس المخلوي (RSV) عند الرضع: إمتى تقلق
+- تطعيم الحصبة: ليه مهم وإمتى
+- المضاد الحيوي مش بيعالج الفيروس: صح ولا غلط (quiz)
+- إجهاد العين من الشاشات (used 24-pm) · قمل المدارس (used 24-am)
+
 ## 2. Evergreen — most searched symptoms & questions
 (Most-googled health searches: lightheadedness, hair loss, memory, fatigue, bloating, congestion, cholesterol, kidney stones, headache, dandruff, A1C, immunity, metabolism, water, salt.)
 - تساقط الشعر: أسباب بنتجاهلها
