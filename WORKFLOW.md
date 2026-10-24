@@ -3,13 +3,16 @@
 Account owner: توماس سمير فوزي, طالب طب بشري (medical student — NOT a doctor).
 Goal: grow followers, reach and engagement with Egyptian-Arabic medical awareness for the general public.
 Metricool brand (blogId): 7301767. Networks: instagram AND facebook (page "توماس سمير طالب طب بشري"). Timezone: Africa/Cairo.
-TWO CAROUSELS per day (user's choice, no reels): a morning slot `am` (08:30–13:00) and an evening slot `pm` (17:00–23:00). The exact time per network is chosen from the post's target audience — read AUDIENCE.md (who is online when, which network, how to talk to them). Default 10:00 / 18:00 only when the audience is mixed.
-Folders/specs are named `<date>-am` and `<date>-pm` (e.g. posts/2026-10-21-am, specs/2026-10-21-pm.json).
+ONE CAROUSEL + ONE STORY per day (user's decision 2026-10-24, to stay inside the Metricool plan limit; no reels).
+- The carousel is ONE Metricool post with providers [instagram, facebook] at ONE time — it goes to Instagram and is shared to Facebook at the same moment. Never split Instagram and Facebook into separate posts.
+- The story is ONE Metricool post with providers [instagram, facebook] (type STORY on both), 15 minutes after the carousel.
+- The single daily time (08:30–23:00) is chosen from the post's target audience in AUDIENCE.md and what performance.md shows works best on Instagram (the main stage).
+Folders/specs are named `<date>` (e.g. posts/2026-10-25, specs/2026-10-25.json). Older days used `<date>-am` / `<date>-pm`.
 
 
 ## Audience first (read AUDIENCE.md every run)
 - Decide each post's `audience` (youth | parents | older | general) BEFORE writing it, and write the whole post in that audience's tone (AUDIENCE.md → "How to talk to each audience"). Premium, elegant brand voice (AUDIENCE.md → "Brand voice"): refined Egyptian Arabic, calm and confident, no slang, no references to regions, villages or social class; no pity, shame, mockery or stereotypes.
-- Pick `ig_time` and `fb_time` for that audience from AUDIENCE.md, adjusted by what performance.md shows works. If they differ, schedule Instagram and Facebook as two separate posts, each with its own story 15 minutes later.
+- Pick ONE `time` for that audience from AUDIENCE.md, adjusted by what performance.md shows works. Instagram and Facebook always publish together as one post.
 - Across the week, cover all audiences (youth, parents, older adults) — don't serve only one group.
 - Every Friday: refresh AUDIENCE.md with the account's demographics (IGAG01–03) and what performance.md says about times/tones, and try one new time slot that week.
 
@@ -21,15 +24,16 @@ Folders/specs are named `<date>-am` and `<date>-pm` (e.g. posts/2026-10-21-am, s
 - MUSIC: Instagram's publishing API only allows music on reels, not carousels (Metricool returns AUDIO_NOT_APPLICABLE). Do NOT send audioConfiguration on carousels. In the final message, suggest one fitting, currently popular song name per post that the user can add by hand in the Instagram app if they want.
 
 ## Stories — a teaser story for EVERY carousel (cover only, not the whole post)
-- After rendering a carousel, make its story: `POST_THEME=<same theme> python3 tools/make_story.py posts/<date>-<slot>/slide_01.jpg posts/<date>-<slot>/story.jpg "<teaser>"`.
+- After rendering a carousel, make its story: `POST_THEME=<same theme> python3 tools/make_story.py posts/<date>/slide_01.jpg posts/<date>/story.jpg "<teaser>"`.
   The teaser is ONE short Egyptian-Arabic curiosity line that makes people open the profile without giving the answer, different every time (e.g. "الخرافة رقم ٤ أغلبنا مصدقها", "٦ علامات لازم كل أم وأب يعرفوها", "الغلطة رقم ٢ بنعملها كل يوم"). The image already says "بوست جديد", points at the name ("اضغط على اسمي") and says "البوست كامل على البروفايل".
-- Commit/push story.jpg with the post, then schedule it 15 minutes after the post (10:15 / 18:15) with `createScheduledPost`, providers [instagram, facebook], instagramData type STORY, facebookData type STORY, NO text, autoPublish true, media = story.jpg raw URL.
+- Commit/push story.jpg with the post, then schedule it 15 minutes after the post with `createScheduledPost`, providers [instagram, facebook], instagramData type STORY, facebookData type STORY, NO text, autoPublish true, media = story.jpg raw URL.
 - If Facebook refuses the story, still schedule the Instagram one and report it.
+- Plan limit: if any provider shows "You have reached your Metricool account limit", nothing can be published until the plan limit resets or is upgraded — say so first in the final message (do not keep creating posts that will fail).
 - Failure check (start of every run): `getScheduledPosts` for today and yesterday; any provider with status ERROR (Instagram stories sometimes fail with "media cannot be found") → if its time slot hasn't passed by more than a few hours, reschedule it once from the GitHub raw URL, and always list every failure in the final message.
 
 ## Performance loop — learn from every post (do this FIRST each run)
 1. Pull Instagram post stats for the last 14 days: `getAnalyticsDataByMetrics(brandId=7301767, metrics=["IGPO02","IGPO06","IGPO07","IGPO14","IGPO28","IGPO13","IGPO08","IGPO15","IGPO27","IGPO29"])` (date, url, type, reach, views, likes, comments, saves, shares, follows).
-2. Add/refresh each post's row in `performance.md` (match by date/time to topics.md) and compute its score. Record audience, ig_time, fb_time and tone for each post too, so the loop learns which time and tone work for which audience.
+2. Add/refresh each post's row in `performance.md` (match by date/time to topics.md) and compute its score. Record audience, time and tone for each post too, so the loop learns which time and tone work for which audience.
 3. Before choosing tomorrow's topics, read performance.md: repeat what is in the top third (topic family, angle, hook style, audience, slide count), avoid what is in the bottom third, and try ONE new experiment per day (new hook style or format) so the account keeps improving. Write one line under "## Lessons" in performance.md each run (what worked / what to try).
 
 ## Quality bar — every carousel must pass ALL of these before it is scheduled
@@ -57,28 +61,27 @@ Every fact must come from an approved reference — standard medical textbooks (
 - If no approved source covers the topic, choose another topic.
 
 ## Each run
-1. Find the next Cairo date (tomorrow or later) that does not yet have BOTH `posts/<date>-am` and `posts/<date>-pm`.
-   Prepare whichever of the two slots is missing for that date (normally both). Never prepare a date in the past or redo an existing folder.
-2. Both slots are carousels. The two topics and the two colour themes of the same day must be different, and the evening one must use a different angle than the morning one.
-3. For each slot pick a NEW topic (and its approved source) not listed in `topics.md`. Rotate content angles that get reach:
+1. Find the next Cairo date (tomorrow or later) that does not yet have `posts/<date>` (or the old `<date>-am`/`<date>-pm`). Never prepare a date in the past or redo an existing folder.
+2. One carousel per day. Its theme and angle must differ from the previous day's post.
+3. Pick a NEW topic (and its approved source) not listed in `topics.md`. Rotate content angles that get reach:
    - خرافات طبية مصدقها (myth vs. fact)
    - علامات خطر لازم تروح فيها للطوارئ (red flags)
    - غلطات يومية بتأذي صحتك (everyday mistakes)
    - "إيه اللي بيحصل في جسمك لما…" (body explainer)
    - إسعافات أولية صح وغلط (first aid)
    Pick topics that are common, relatable and shareable in Egypt (صداع، ضغط، سكر، معدة، نوم، أطفال، صيام، حر، إسعافات…).
-4. Write the spec in `specs/<date>-<slot>.json` (Egyptian Arabic, short punchy lines).
+4. Write the spec in `specs/<date>.json` (Egyptian Arabic, short punchy lines).
    - Carousel: 7–9 slides. Slide 1 = hook (question/shock) using type `cover`; points use type `point` with `num`; last slide type `cta`.
    - Reel (motion graphics): 7–9 scenes, ~30 s total (secs 3–4.5 each). Give EVERY scene an `"icon"` that matches its meaning, chosen from the file names in assets/icons (e.g. flame, droplet, pill, heart, brain, ambulance, thermometer, salad, moon, ban, circle-check). Optional `"kind"`: hook | do | dont | alert | info | cta (colours: do=green, dont/alert=red). Scene 1 hook in the first 3 seconds; last scene asks to send it to someone + follow.
    - On-screen text has no emojis (font can't draw them). Emojis are fine in the caption.
    - Spec also holds `"caption"`: first line = hook with the topic keyword; then save/send/comment CTA; "تابعني عشان معلومة طبية جديدة كل يوم."; the line "⚠️ المحتوى للتوعية فقط ومش بديل عن استشارة الطبيب."; 3–5 Arabic hashtags.
 5. Medical safety: only well-established facts. No drug doses, no prescriptions, no brand names, no diagnosis promises, nothing that discourages seeing a doctor. When in doubt, pick another topic.
 6. Render:
-   - `POST_THEME=<theme> python3 tools/make_carousel.py specs/<date>-<slot>.json posts/<date>-<slot>` (once per slot)
+   - `POST_THEME=<theme> python3 tools/make_carousel.py specs/<date>.json posts/<date>`
    Look at the output (open slide images / extract a few frames with ffmpeg) and fix any overflow or broken text before publishing.
-7. Append `- <date>-<slot> | carousel/reel | <topic>` to `topics.md`, commit, push to `main`.
-8. Confirm the raw URLs return 200: `https://raw.githubusercontent.com/tomassaaamir49-byte/thomas-posts/main/posts/<date>-<slot>/...`
-9. Schedule with Metricool `createScheduledPost` at the audience-based time chosen above (Instagram and Facebook may be separate posts at different times), autoPublish true, providers [instagram, facebook]:
+7. Append `- <date> | carousel | <topic>` to `topics.md`, commit, push to `main`.
+8. Confirm the raw URLs return 200: `https://raw.githubusercontent.com/tomassaaamir49-byte/thomas-posts/main/posts/<date>/...`
+9. Schedule with Metricool `createScheduledPost` at the audience-based time chosen above as ONE post, autoPublish true, providers [instagram, facebook]:
    - carousel: media = all slide JPG raw URLs in order, instagramData type POST, facebookData type POST.
    - If a provider fails (e.g. facebook disconnected), still schedule for the networks that work and report which one failed.
-10. Schedule each post's teaser story (see Stories). Check the 2 posts and 2 stories appear in `getScheduledPosts`. If anything fails, say exactly what failed.
+10. Schedule the teaser story (see Stories) as ONE post on both networks. Check the post and the story appear in `getScheduledPosts`. If anything fails, say exactly what failed.

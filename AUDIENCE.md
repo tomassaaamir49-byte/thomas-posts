@@ -25,8 +25,7 @@ Account activity data (Metricool best-time, both networks): strongest 10:00–12
 | الكل (عام) | 10:00 or 18:00 | same | Default when audience is mixed |
 - Friday: never post 11:30–13:30 (Jumuah). Friday evening (18:00–21:00) is good.
 - Ramadan: after iftar (21:00–23:00) and before suhoor (01:00–02:30). Summer holidays: shift youth posts later (22:00).
-- Morning slot must stay between 08:30 and 13:00, evening slot between 17:00 and 23:00, at least 5 hours apart.
-- When the best time differs by network, schedule Instagram and Facebook as TWO separate Metricool posts at their own times (same media + caption). Each story goes 15 minutes after its own network's post.
+- Since 2026-10-24: ONE post per day (08:30–23:00), published to Instagram and Facebook together at one time, plus one story 15 minutes later. Choose the time by the audience on Instagram (the main stage); rotate audiences across the week.
 
 ## What the data says so far (refreshed 2026-10-23)
 - Reach: 10:00 morning posts reach the most people (87–177) vs 18:00 (55–99).
