@@ -7,6 +7,9 @@ ONE CAROUSEL + ONE STORY per day (user's decision 2026-10-24, to stay inside the
 - The carousel is ONE Metricool post with providers [instagram, facebook] at ONE time — it goes to Instagram and is shared to Facebook at the same moment. Never split Instagram and Facebook into separate posts.
 - The story is ONE Metricool post with providers [instagram, facebook] (type STORY on both), 15 minutes after the carousel.
 - The single daily time (08:30–23:00) is chosen from the post's target audience in AUDIENCE.md and what performance.md shows works best on Instagram (the main stage).
+## MANUAL MODE (user's decision 2026-10-25) — overrides the Metricool scheduling steps below
+The Metricool plan limit was reached, so the user publishes by hand. Each run: prepare the post exactly as below (performance loop, research, quality bar, render, commit, push), but do NOT call createScheduledPost. Instead deliver to the user with SendUserFile: slide_01..slide_NN.jpg in order, story.jpg, and caption.txt (the spec's caption), then a short Egyptian-Arabic message with the recommended publish time for Instagram + Facebook together, the story 15 minutes later, and the suggested song. Metricool is still used read-only for analytics (performance loop). Mark the row in topics.md / performance.md as "manual".
+
 Folders/specs are named `<date>` (e.g. posts/2026-10-25, specs/2026-10-25.json). Older days used `<date>-am` / `<date>-pm`.
 
 
