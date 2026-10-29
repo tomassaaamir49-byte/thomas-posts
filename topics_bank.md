@@ -22,6 +22,13 @@ Egyptian news this autumn: MoH warns of 7 winter respiratory viruses (flu, RSV, 
 - المضاد الحيوي مش بيعالج الفيروس: صح ولا غلط (quiz)
 - إجهاد العين من الشاشات (used 24-pm) · قمل المدارس (used 24-am)
 
+### Added 2026-10-29 (weekly refresh)
+Egyptian news late Oct 2026: MoH keeps monitoring the respiratory-virus season and says the situation is stable; Vacsera has the seasonal flu vaccine available; awareness campaign on flu & seasonal respiratory illness continues.
+- الشيشة: خرافات صح ولا غلط (used 30th) · السجاير الإلكترونية والفيب: صح ولا غلط (youth, WHO/CDC)
+- غسيل الإيد والعطس في الكوع: بنعمله غلط؟ (school/uni, WHO)
+- تطعيم الإنفلونزا: مين محتاجه أكتر (older/parents, CDC/MoH)
+- قلة النوم وقت الامتحانات (exams start Jan — prep from Dec)
+
 ## 2. Evergreen — most searched symptoms & questions
 (Most-googled health searches: lightheadedness, hair loss, memory, fatigue, bloating, congestion, cholesterol, kidney stones, headache, dandruff, A1C, immunity, metabolism, water, salt.)
 - تساقط الشعر: أسباب بنتجاهلها

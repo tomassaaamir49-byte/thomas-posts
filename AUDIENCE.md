@@ -2,9 +2,9 @@
 
 Researched 2026-10-22. Re-check the account's own data every Friday and update this file.
 
-## Who is actually following (Metricool IGAG, refreshed 2026-10-23, ~293 followers)
-- 18–24: ~68% (men 138, women 52) → students / young adults are the core today.
-- 25–34: ~17% (men 38, women 13) · 13–17: ~7% · 35+: ~8% (35–44: 13, 45–54: 8, 65+: 1).
+## Who is actually following (Metricool IGAG, refreshed 2026-10-29, ~299 followers)
+- 18–24: ~67% (men 140, women 53) → students / young adults are the core today.
+- 25–34: ~18% (men 38, women 14) · 13–17: ~7% · 35+: ~8% (35–44: 14, 45–54: 9, 65+: 1).
 - Gender overall: ~70% men, ~27% women → parent topics should speak to fathers too ("لو انت أم أو أب").
 - Goal: keep the young core AND grow parents (25–40) and older adults, mainly through Facebook.
 Refresh weekly with `getAnalyticsDataByMetrics(metrics=["IGAG01","IGAG02","IGAG03"])`.
@@ -32,6 +32,14 @@ Account activity data (Metricool best-time, both networks): strongest 10:00–12
 - Engagement: the quiz "صح ولا غلط" format at 18:00 scored 3× any other post (only post with shares). Tone "practical + playful quiz" beats "calm list".
 - Comments are still 0 on every post → keep testing easier comment asks (a number).
 - This week's new time tests: IG 21:00 (23-pm, youth), IG 11:00 / FB 10:30 on a Saturday (24-am, parents). Compare next Friday.
+
+## What the data says (refreshed 2026-10-29, Friday)
+- Score leaders after 10 posts: youth sleep challenge at IG 21:00 (20.3, 4 shares, 2 follows) and the salt quiz at 18:00 (18.2). Formats that ask people to count/answer win on engagement.
+- Reach leader: older-audience diabetes at IG 11:00 (400). 10:00–11:00 = best reach; 21:00 = best engagement for youth.
+- Weakest: comparison format posted at midday 12:53 (6.5) → avoid midday and the comparison format.
+- Tones: 'sharp & smart' for youth and 'respectful حضرتك' for older both work; 'calm list' is average.
+- Problem: posts sent for 27–29 Oct were not published on Instagram — results depend on publishing at the recommended time.
+- Next week's new time test: youth on Friday 21:00 (30 Oct); compare with the Thursday 21:00 youth result.
 
 ## Brand voice — premium, elegant, respectful (applies to every audience)
 - The account is a premium medical brand: polished, calm, confident, trustworthy — like a refined clinic, never like a street ad.
