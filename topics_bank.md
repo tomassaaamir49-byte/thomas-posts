@@ -29,6 +29,14 @@ Egyptian news late Oct 2026: MoH keeps monitoring the respiratory-virus season a
 - تطعيم الإنفلونزا: مين محتاجه أكتر (older/parents, CDC/MoH)
 - قلة النوم وقت الامتحانات (exams start Jan — prep from Dec)
 
+### Added 2026-10-30 (weekly refresh)
+Egyptian news: MoH keeps reporting the respiratory-virus situation as stable and denies rumours of a new virus; school-season prevention messages (hand hygiene, covering coughs) continue.
+- غسيل الإيد للأطفال: ٥ لحظات (used 31st, CDC)
+- الشائعات الصحية على السوشيال: إزاي تتأكد من المعلومة (general)
+- الأنيميا عند الأطفال: علامات بتتأخر (parents, WHO/NHS)
+- تطعيم الحصبة: ليه الجرعتين مهمين (parents, WHO)
+- الصداع والمذاكرة (youth, NHS)
+
 ## 2. Evergreen — most searched symptoms & questions
 (Most-googled health searches: lightheadedness, hair loss, memory, fatigue, bloating, congestion, cholesterol, kidney stones, headache, dandruff, A1C, immunity, metabolism, water, salt.)
 - تساقط الشعر: أسباب بنتجاهلها

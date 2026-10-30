@@ -2,8 +2,8 @@
 
 Researched 2026-10-22. Re-check the account's own data every Friday and update this file.
 
-## Who is actually following (Metricool IGAG, refreshed 2026-10-29, ~299 followers)
-- 18–24: ~67% (men 140, women 53) → students / young adults are the core today.
+## Who is actually following (Metricool IGAG, refreshed 2026-10-30, ~300 followers)
+- 18–24: ~67% (men 141, women 53) → students / young adults are the core today.
 - 25–34: ~18% (men 38, women 14) · 13–17: ~7% · 35+: ~8% (35–44: 14, 45–54: 9, 65+: 1).
 - Gender overall: ~70% men, ~27% women → parent topics should speak to fathers too ("لو انت أم أو أب").
 - Goal: keep the young core AND grow parents (25–40) and older adults, mainly through Facebook.
@@ -40,6 +40,13 @@ Account activity data (Metricool best-time, both networks): strongest 10:00–12
 - Tones: 'sharp & smart' for youth and 'respectful حضرتك' for older both work; 'calm list' is average.
 - Problem: posts sent for 27–29 Oct were not published on Instagram — results depend on publishing at the recommended time.
 - Next week's new time test: youth on Friday 21:00 (30 Oct); compare with the Thursday 21:00 youth result.
+
+## What the data says (refreshed 2026-10-30, Friday)
+- Demographics unchanged (18–24 ≈ 67%, men ≈ 70%); 13–17 grew slightly (21).
+- Still only 10 posts with data; nothing published on Instagram since the 27th 11:32 by-hand post → the 27th–30th tests (youth 21:00 caffeine, parents 11:00 cough, older 11:00 blood pressure, youth Fri 21:00 shisha) have no results yet. The Friday 21:00 youth test is pending.
+- Times: 10:00–11:30 = best reach (407, 324, 269); 21:00 = best engagement for youth (19.6). Midday 12:53 = weakest (6.2).
+- Tones: count/answer formats with 'sharp & smart' (youth) or 'respectful حضرتك' (older) lead; 'calm list' average.
+- Next week's new time test: parents at 21:00 (after the kids sleep) on a weekday.
 
 ## Brand voice — premium, elegant, respectful (applies to every audience)
 - The account is a premium medical brand: polished, calm, confident, trustworthy — like a refined clinic, never like a street ad.
