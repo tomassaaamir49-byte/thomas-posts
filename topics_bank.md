@@ -37,6 +37,16 @@ Egyptian news: MoH keeps reporting the respiratory-virus situation as stable and
 - تطعيم الحصبة: ليه الجرعتين مهمين (parents, WHO)
 - الصداع والمذاكرة (youth, NHS)
 
+
+### Added 2026-11-06 (weekly refresh)
+Egyptian news early Nov 2026: a school health campaign screening ~7 million students across 21 governorates (school-age anaemia, weight and growth checks); the '100 Million Healthy Lives' initiative continues chronic and kidney-disease screening and breast-cancer awareness; winter home-healthcare drive for chronic patients.
+- نقص الحديد عند الأطفال: صح ولا غلط (used 7 Nov, Mayo Clinic)
+- السمنة عند الأطفال: عادات بسيطة بتفرق (parents, WHO/NHS)
+- الكلى: علامات بدري وعادات بتحميها (older, NHS/NIDDK-style official pages)
+- الكشف المبكر لسرطان الثدي: إمتى وإزاي (women/older, WHO/NHS — tactful)
+- الفيب والسجاير الإلكترونية: صح ولا غلط (youth, WHO/CDC) — still unused
+- قلة النوم وقت الامتحانات (youth, prep for Dec–Jan exams)
+
 ## 2. Evergreen — most searched symptoms & questions
 (Most-googled health searches: lightheadedness, hair loss, memory, fatigue, bloating, congestion, cholesterol, kidney stones, headache, dandruff, A1C, immunity, metabolism, water, salt.)
 - تساقط الشعر: أسباب بنتجاهلها

@@ -48,6 +48,14 @@ Account activity data (Metricool best-time, both networks): strongest 10:00–12
 - Tones: count/answer formats with 'sharp & smart' (youth) or 'respectful حضرتك' (older) lead; 'calm list' average.
 - Next week's new time test: parents at 21:00 (after the kids sleep) on a weekday.
 
+
+## What the data says (refreshed 2026-11-06, Friday)
+- Demographics (IGAG): 18–24 ≈ 66% (men 142, women 53), 25–34 ≈ 17%, 13–17 ≈ 7% (22), 35+ ≈ 8% (35–44: 14, 45–54: 9, 65+: 1). Men ≈ 70%. Unchanged → youth core, parents/older mainly via Facebook.
+- Only 8 posts with data. Score leader still youth 'عدّ معايا' at 21:00 (19.8); reach leader older at 11:00 (423). The 5 Nov youth challenge (posted by hand Thu 16:13 instead of 21:00) got 2 comments on day one → number asks ('كام من ٦؟') bring comments.
+- Weak slots: midday 12:53 (6.2) and after midnight 01:19 (8.1). Publishing at the recommended time matters.
+- Tones: 'sharp & smart' (youth), 'respectful حضرتك' (older) and 'calm, reassuring' quiz (parents) all fine; count/answer formats beat plain lists.
+- This week's new time test: parents at Saturday 21:00 (7 Nov) — compare with parent posts at 11:00 and Saturday 13:47 (337 reach, 4 shares).
+
 ## Brand voice — premium, elegant, respectful (applies to every audience)
 - The account is a premium medical brand: polished, calm, confident, trustworthy — like a refined clinic, never like a street ad.
 - Language: clean, elegant Egyptian Arabic (عامية راقية) — clear and warm, no slang, no vulgar or crowd-pleasing jokes, no exaggeration or panic, no English words. Medical terms explained simply and precisely.
