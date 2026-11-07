@@ -42,7 +42,7 @@ Egyptian news: MoH keeps reporting the respiratory-virus situation as stable and
 Egyptian news early Nov 2026: a school health campaign screening ~7 million students across 21 governorates (school-age anaemia, weight and growth checks); the '100 Million Healthy Lives' initiative continues chronic and kidney-disease screening and breast-cancer awareness; winter home-healthcare drive for chronic patients.
 - نقص الحديد عند الأطفال: صح ولا غلط (used 7 Nov, Mayo Clinic)
 - السمنة عند الأطفال: عادات بسيطة بتفرق (parents, WHO/NHS)
-- الكلى: علامات بدري وعادات بتحميها (older, NHS/NIDDK-style official pages)
+- الكلى: علامات بدري وعادات بتحميها (used 8 Nov, NHS)
 - الكشف المبكر لسرطان الثدي: إمتى وإزاي (women/older, WHO/NHS — tactful)
 - الفيب والسجاير الإلكترونية: صح ولا غلط (youth, WHO/CDC) — still unused
 - قلة النوم وقت الامتحانات (youth, prep for Dec–Jan exams)
