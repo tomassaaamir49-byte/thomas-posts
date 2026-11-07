@@ -39,10 +39,52 @@ AR_DIGITS = str.maketrans("0123456789", "٠١٢٣٤٥٦٧٨٩")
 _EMOJI = re.compile("[\U0001F000-\U0001FAFF\u2600-\u27BF\uFE0F\u200d]+")
 
 
-def font(size, weight=700):
-    f = ImageFont.truetype(FONT, size)
-    f.set_variation_by_axes([weight, 0])
+# Font pairings (Google Fonts, OFL) — pick with env POST_FONTS=<name>; rotate like themes.
+# Weights >= 800 use the heading font, lower weights use the body font.
+# Each entry: variable font file, or {weight: static file}.
+_FD = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "fonts")
+_IBM = {400: "IBMPlexSansArabic-Regular.ttf", 500: "IBMPlexSansArabic-Medium.ttf",
+        600: "IBMPlexSansArabic-SemiBold.ttf", 700: "IBMPlexSansArabic-Bold.ttf"}
+_ALM = {400: "Almarai-Regular.ttf", 700: "Almarai-Bold.ttf", 800: "Almarai-ExtraBold.ttf"}
+_TAJ = {500: "Tajawal-Medium.ttf", 700: "Tajawal-Bold.ttf", 800: "Tajawal-ExtraBold.ttf",
+        900: "Tajawal-Black.ttf"}
+FONT_PAIRS = {
+    "cairo":    ("Cairo.ttf", "Cairo.ttf"),                 # the original look
+    "bold":     ("Changa.ttf", _IBM),                       # strong condensed headings + IBM Plex
+    "modern":   ("Alexandria.ttf", "ReadexPro.ttf"),        # geometric, premium
+    "classic":  ("ElMessiri.ttf", _ALM),                    # refined, calm
+    "clean":    ("NotoKufiArabic.ttf", "Vazirmatn.ttf"),    # crisp, very readable
+    "warm":     ("BalooBhaijaan2.ttf", _TAJ),               # soft and friendly (parents/youth)
+}
+_PAIR = FONT_PAIRS.get(os.environ.get("POST_FONTS", "cairo"), FONT_PAIRS["cairo"])
+if "CAROUSEL_FONT" in os.environ:
+    _PAIR = (FONT, FONT)
+
+
+def _load(spec, size, weight):
+    if isinstance(spec, dict):
+        w = min(spec, key=lambda k: abs(k - weight))
+        return ImageFont.truetype(os.path.join(_FD, spec[w]) if not os.path.isabs(spec[w]) else spec[w], size)
+    path = spec if os.path.isabs(spec) else os.path.join(_FD, spec)
+    f = ImageFont.truetype(path, size)
+    try:
+        axes = f.get_variation_axes()
+    except Exception:
+        return f
+    vals = []
+    for a in axes:
+        name = a.get("name", b"")
+        name = name.decode() if isinstance(name, bytes) else str(name)
+        if name.lower() in ("weight", "wght"):
+            vals.append(max(a["minimum"], min(a["maximum"], weight)))
+        else:
+            vals.append(a.get("default", a["minimum"]))
+    f.set_variation_by_axes(vals)
     return f
+
+
+def font(size, weight=700):
+    return _load(_PAIR[0] if weight >= 800 else _PAIR[1], size, weight)
 
 
 def wrap(draw, text, f, maxw, rtl=True):
