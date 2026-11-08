@@ -44,7 +44,7 @@ Egyptian news early Nov 2026: a school health campaign screening ~7 million stud
 - السمنة عند الأطفال: عادات بسيطة بتفرق (parents, WHO/NHS)
 - الكلى: علامات بدري وعادات بتحميها (used 8 Nov, NHS)
 - الكشف المبكر لسرطان الثدي: إمتى وإزاي (women/older, WHO/NHS — tactful)
-- الفيب والسجاير الإلكترونية: صح ولا غلط (youth, WHO/CDC) — still unused
+- الفيب والسجاير الإلكترونية: صح ولا غلط (used 9 Nov, CDC)
 - قلة النوم وقت الامتحانات (youth, prep for Dec–Jan exams)
 
 ## 2. Evergreen — most searched symptoms & questions
