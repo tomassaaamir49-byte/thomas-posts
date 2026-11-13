@@ -56,6 +56,13 @@ Account activity data (Metricool best-time, both networks): strongest 10:00–12
 - Tones: 'sharp & smart' (youth), 'respectful حضرتك' (older) and 'calm, reassuring' quiz (parents) all fine; count/answer formats beat plain lists.
 - This week's new time test: parents at Saturday 21:00 (7 Nov) — compare with parent posts at 11:00 and Saturday 13:47 (337 reach, 4 shares).
 
+## What the data says (refreshed 2026-11-13, Friday)
+- Demographics (IGAG, ~306 followers): 18–24 ≈ 67% (men 144, women 54), 25–34 ≈ 18% (54), 13–17 ≈ 7% (22), 35+ ≈ 8% (35–44: 14, 45–54: 9, 65+: 1). Men ≈ 70%. Unchanged → youth core; parents/older mainly via Facebook.
+- 7 posts with data. Early leader: youth acne myth-vs-fact at Thu 21:08 (14.9, best like rate). Parents measles timeline at Mon 22:05 holds 12.7 with a follow. Older diabetic-foot at Wed 21:54 = 9.4 and older kidney at Sat 21:05 = 8.0 → older topics at night underperform; keep older at 11:00.
+- Times: 21:00–22:00 now works for youth AND parents; after-midnight (01:19, 01:20) stays weak (8.7–8.8).
+- Tones: 'sharp & smart' (youth) and 'calm, reassuring' (parents) lead; saves and shares remain zero for 3 weeks → keep testing save slides and named shares.
+- This week's new time test: parents at Saturday 21:00 (14 Nov) — the 7 Nov Saturday test never ran at 21:00.
+
 ## Brand voice — premium, elegant, respectful (applies to every audience)
 - The account is a premium medical brand: polished, calm, confident, trustworthy — like a refined clinic, never like a street ad.
 - Language: clean, elegant Egyptian Arabic (عامية راقية) — clear and warm, no slang, no vulgar or crowd-pleasing jokes, no exaggeration or panic, no English words. Medical terms explained simply and precisely.

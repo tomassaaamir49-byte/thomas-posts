@@ -47,6 +47,14 @@ Egyptian news early Nov 2026: a school health campaign screening ~7 million stud
 - الفيب والسجاير الإلكترونية: صح ولا غلط (used 9 Nov, CDC)
 - قلة النوم وقت الامتحانات (youth, prep for Dec–Jan exams)
 
+### Added 2026-11-13 (weekly refresh)
+Egyptian news early–mid Nov 2026: MoH warns people not to ignore chest pain and body numbness (heart/stroke warning signs); MoH launched a national survey on health culture; World Diabetes Day is 14 Nov.
+- السكر عند الأطفال: ٤ علامات (used 14 Nov, NHS)
+- ألم الصدر: إمتى يبقى طوارئ (older/general, NHS)
+- التنميل في الإيد أو الرجل: إمتى تقلق (general, NHS)
+- قلة النوم وقت الامتحانات (youth, Dec–Jan exams)
+- الكشف المبكر لسرطان الثدي (women/older, WHO/NHS — tactful)
+
 ## 2. Evergreen — most searched symptoms & questions
 (Most-googled health searches: lightheadedness, hair loss, memory, fatigue, bloating, congestion, cholesterol, kidney stones, headache, dandruff, A1C, immunity, metabolism, water, salt.)
 - تساقط الشعر: أسباب بنتجاهلها

@@ -272,7 +272,7 @@ def slide_cta(s, i, n):
     y = 200
     y = draw_block(d, s["title"], font(76, 900), y, NAVY, gap=1.35)
     if s.get("body"):
-        y = draw_block(d, s["body"], font(44, 600), y + 20, INK)
+        y = draw_block(d, s["body"], font(44, 600), y + 36, INK)
     y += 50
     actions = s.get("actions", [
         ("تابعني", "عشان بوست طبي جديد كل يوم"),
@@ -280,7 +280,7 @@ def slide_cta(s, i, n):
         ("ابعته", "لحد بتحبه وخايف عليه"),
         ("اكتبلي في الكومنت", "عايز البوست الجاي عن إيه؟"),
     ])
-    fa, fs = font(46, 800), font(36, 600)
+    fa, fs = font(46, 700), font(36, 600)  # body font: tall display headings collided with the subtitle
     for a, sub in actions:
         if y + 130 > H - (240 if s.get("source") else 170):
             break  # no room left above the source line / footer
@@ -319,7 +319,11 @@ def slide_checklist(s, i, n):
         cx, cy = W - M - 50, y + h / 2
         d.ellipse([cx - 26, cy - 26, cx + 26, cy + 26], fill=BLUE)
         d.line([(cx - 11, cy), (cx - 3, cy + 9), (cx + 12, cy - 9)], fill=WHITE, width=6, joint="curve")
-        draw_block(d, item, fi, y + 20, INK, maxw=W - 2 * M - 120, gap=1.4, right=W - M - 95)
+        # centre the text block vertically using the real ink box (fonts differ in metrics)
+        bb = d.textbbox((0, 0), "علامة", font=fi, direction="rtl")
+        ink_h = (len(lines) - 1) * int(fi.size * 1.4) + (bb[3] - bb[1])
+        ty = y + (h - ink_h) / 2 - bb[1]
+        draw_block(d, item, fi, ty, INK, maxw=W - 2 * M - 120, gap=1.4, right=W - M - 95)
         y += h + 18
     footer(d)
     return img
