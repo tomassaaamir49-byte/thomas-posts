@@ -12,7 +12,7 @@ Spec:
             droplet, zzz, scale, stethoscope, phone-call, armchair, steering-wheel-off, baby-carriage, school)
     "icon2" (optional): a small companion icon that completes the meaning (e.g. heart + clock = "sudden").
   slides (7-9):
-    cover      layout: face | numeral | question | alert   (default face)
+    cover      layout: classic (DEFAULT, the original look the user wants) | face | numeral | question | alert
                kicker (who it is for), title (use \n for lines; last line is highlighted on the face cover),
                body (optional), badge (optional, else the series name)
                numeral: "num" (the big number) ; question: "statement" ; alert: "band" (red band text)
@@ -460,9 +460,74 @@ def cover_alert(s, i, n):
     return img
 
 
+def cover_classic(s, i, n):
+    """The original cover look (user request 2026-11-14): light ground, big dark headline on top,
+    Thomas clearly visible in the lower half, pill kicker, underline, swipe hint, centred name footer."""
+    img = Image.new("RGB", (W, H), WHITE)
+    d = ImageDraw.Draw(img)
+    for yy in range(H):
+        d.line([(0, yy), (W, yy)], fill=mix(WHITE, PAPER, yy / H))
+    ph = _photo()
+    if ph is not None:
+        ph = ph.resize((W, int(ph.height * W / ph.width)), Image.LANCZOS)
+        layer = Image.new("RGB", (W, H), PAPER)
+        layer.paste(ph, (0, 900 - int(ph.height * 0.27)))
+        mask = Image.new("L", (W, H))
+        md = ImageDraw.Draw(mask)
+        for yy in range(H):
+            if yy < 560:
+                a = 238
+            elif yy < 760:
+                a = int(238 - (yy - 560) / 200 * 205)
+            elif yy < 1120:
+                a = 33
+            else:
+                a = int(33 + (yy - 1120) / 230 * 200)
+            md.line([(0, yy), (W, yy)], fill=a)
+        img = Image.composite(img, layer, mask)
+        d = ImageDraw.Draw(img)
+    d.rectangle([0, 0, W, 14], fill=ACC)
+    # counter pill (top-left) and kicker pill (top-right)
+    t = f"{i}/{n}".translate(AR_DIGITS)
+    fc = text_font(30, 700)
+    tw = d.textlength(t, font=fc)
+    d.rounded_rectangle([M, 60, M + tw + 40, 112], radius=26, fill=WHITE, outline=LINE, width=2)
+    d.text((M + 20, 64), t, font=fc, fill=MUTE)
+    if s.get("kicker"):
+        fk = display(36, 800)
+        kw = d.textlength(clean(s["kicker"]), font=fk, direction="rtl")
+        d.rounded_rectangle([W - M - kw - 44, 58, W - M, 118], radius=30, fill=ACC)
+        d.text((W - M - kw - 22, 62), clean(s["kicker"]), font=fk, fill=WHITE, direction="rtl")
+    ft, fb = display(96, 800), text_font(46, 600)
+    y = draw_lines(d, wrap(d, s["title"], ft, W - 2 * M), ft, 160, INK, 1.3)
+    d.rounded_rectangle([W - M - 160, y + 30, W - M, y + 42], radius=6, fill=ACC)
+    yb = y + 42
+    if s.get("body"):
+        yb = draw_lines(d, wrap(d, s["body"], fb, W - 2 * M), fb, y + 75, BODY, 1.45)
+    # swipe hint
+    f = display(40, 800)
+    hint = "اسحب للشمال"
+    hw = d.textlength(hint, font=f, direction="rtl")
+    hy = yb + 36
+    d.text((W - M - hw, hy), hint, font=f, fill=ACC, direction="rtl")
+    x0 = W - M - hw - 90
+    ay = hy + 30
+    d.line([(x0, ay), (x0 + 55, ay)], fill=ACC, width=6)
+    d.polygon([(x0 - 6, ay), (x0 + 18, ay - 16), (x0 + 18, ay + 16)], fill=ACC)
+    # centred footer like the original
+    fy = H - 150
+    d.line([(M, fy), (W - M, fy)], fill=LINE, width=2)
+    f1, f2 = text_font(36, 700), text_font(32, 600)
+    nw = d.textlength(NAME, font=f1, direction="rtl")
+    d.text(((W - nw) / 2, fy + 16), NAME, font=f1, fill=INK, direction="rtl")
+    uw = d.textlength(USER, font=f2)
+    d.text(((W - uw) / 2, fy + 66), USER, font=f2, fill=ACC)
+    return img
+
+
 def slide_cover(s, i, n):
-    lay = s.get("layout") or ("alert" if s.get("alert") else "face")
-    return {"face": cover_face, "numeral": cover_numeral, "question": cover_question, "alert": cover_alert}[lay](s, i, n)
+    lay = s.get("layout") or "classic"
+    return {"classic": cover_classic, "face": cover_face, "numeral": cover_numeral, "question": cover_question, "alert": cover_alert}[lay](s, i, n)
 
 
 # ---------- inner slides ----------
