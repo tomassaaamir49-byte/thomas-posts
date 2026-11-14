@@ -21,7 +21,7 @@ Spec:
     redflags   kicker (band text), title (optional), items [..]
     myth       myth (crossed out), title (the fact headline), body
     data       kicker, title (the takeaway), bars [{"label","value","pct" 0-100,"hi":true}], source
-    answer     kicker, verdict "صح"|"غلط", title, body       (quiz answers)
+    answer     kicker, question (optional, the quiz question shown above the verdict), verdict "صح"|"غلط", title, body
     checklist  kicker, title, items [3-5]      (the save slide, tint ground)
     cta        title, body                      (closing, ink ground, photo avatar, source)
 """
@@ -648,8 +648,13 @@ def slide_answer(s, i, n):
     fv, ft, fb = display(64, 800), display(72, 700), text_font(44, 500)
     tl = wrap(d, s["title"], ft, W - 2 * M)
     bl = wrap(d, s.get("body", ""), fb, W - 2 * M) if s.get("body") else []
-    total = 130 + 50 + text_h(ft, tl, 1.38) + (36 + text_h(fb, bl, 1.6) if bl else 0)
+    fq = display(54, 700)
+    ql = wrap(d, s["question"], fq, W - 2 * M - (300 if s.get("icon") else 0)) if s.get("question") else []
+    qh = text_h(fq, ql, 1.4) + 44 if ql else 0
+    total = qh + 130 + 50 + text_h(ft, tl, 1.38) + (36 + text_h(fb, bl, 1.6) if bl else 0)
     y = vcenter(total, top=180)
+    if ql:
+        y = draw_lines(d, ql, fq, y, BODY, 1.4) + 44
     if s.get("icon"):
         spot(img, M + 120, int(y + 60), 105, s["icon"], s.get("icon2"), col)
         d = ImageDraw.Draw(img)
