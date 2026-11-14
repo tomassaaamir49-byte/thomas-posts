@@ -1,96 +1,124 @@
-"""Builds an Instagram carousel (1080x1350 PNGs) from a JSON spec.
+"""Brand carousel renderer (1080x1350 JPGs) — follows brand/style-guide.html (brand system v1).
 
-usage: python3 make_carousel.py spec.json outdir
+usage: POST_SERIES=<youth|parents|older|general|quiz|emergency> python3 make_carousel.py spec.json outdir
+
+The colours and fonts are FIXED (ink on paper, teal brand, one series accent per post).
+Variety comes from the cover layout and the slide types, not from colours.
+
+Spec:
+  "series": youth | parents | older | general | quiz | emergency   (POST_SERIES env overrides; falls back to "audience")
+  slides (7-9):
+    cover      layout: face | numeral | question | alert   (default face)
+               kicker (who it is for), title (use \n for lines; last line is highlighted on the face cover),
+               body (optional), badge (optional, else the series name)
+               numeral: "num" (the big number) ; question: "statement" ; alert: "band" (red band text)
+    point      kicker (badge), num (optional), title, body
+               alert:true  -> red-flag slide (red band = kicker, title, body or items)
+    redflags   kicker (band text), title (optional), items [..]
+    myth       myth (crossed out), title (the fact headline), body
+    data       kicker, title (the takeaway), bars [{"label","value","pct" 0-100,"hi":true}], source
+    answer     kicker, verdict "صح"|"غلط", title, body       (quiz answers)
+    checklist  kicker, title, items [3-5]      (the save slide, tint ground)
+    cta        title, body                      (closing, ink ground, photo avatar, source)
 """
-import json, sys, os, math, re
+import json, sys, os, re
 from PIL import Image, ImageDraw, ImageFont
 
-FONT = os.environ.get("CAROUSEL_FONT",
-    os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "fonts", "Cairo.ttf"))
+ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
+FD = os.path.join(ROOT, "fonts")
 W, H = 1080, 1350
-M = 90  # side margin
+M = 80            # side margin
+TOP = 96          # top margin
+FOOT = 150        # footer zone height
+TITLE_TOP = 200
 
-NAVY = (11, 37, 69)
-INK = (30, 50, 80)
-BLUE = (30, 115, 232)
-SKY = (232, 242, 255)
-RED = (229, 57, 53)
+# ---- brand colours (fixed) ----
+INK = (15, 36, 48)
+PAPER = (244, 246, 243)
 WHITE = (255, 255, 255)
-MUTED = (110, 130, 155)
+TEAL = (11, 110, 106)
+TINT = (221, 237, 234)
+MINT = (127, 209, 195)
+MUTE = (78, 95, 102)
+LINE = (201, 214, 210)
+BODY = (38, 64, 75)
+BODY_ON_INK = (211, 226, 224)
+MUTE_ON_INK = (184, 203, 203)
+MYTH_BG = (233, 236, 234)
+MYTH_TXT = (94, 110, 115)
+RED = (194, 53, 43)
+RED_TINT = (246, 222, 219)
 
-# Colour themes — pick with env POST_THEME=<name>; rotate so consecutive posts look different.
-THEMES = {
-    "ocean":   dict(NAVY=(11, 37, 69),  BLUE=(30, 115, 232), SKY=(232, 242, 255)),
-    "emerald": dict(NAVY=(10, 48, 40),  BLUE=(16, 150, 110), SKY=(228, 247, 239)),
-    "violet":  dict(NAVY=(40, 24, 72),  BLUE=(124, 77, 255), SKY=(240, 234, 255)),
-    "sunset":  dict(NAVY=(66, 32, 12),  BLUE=(234, 110, 30), SKY=(255, 240, 228)),
-    "rose":    dict(NAVY=(70, 18, 40),  BLUE=(219, 39, 119), SKY=(253, 233, 243)),
-    "teal":    dict(NAVY=(12, 50, 60),  BLUE=(13, 148, 170), SKY=(226, 246, 250)),
+SERIES = {  # accent on paper, accent on ink, label
+    "youth":     ((63, 67, 201),  (172, 175, 255), "سلسلة الشباب"),
+    "parents":   ((166, 73, 22),  (242, 180, 143), "سلسلة الأهالي"),
+    "older":     (TEAL,           MINT,            "صحتك بالدنيا"),
+    "general":   (TEAL,           MINT,            "معلومة طبية"),
+    "quiz":      (TEAL,           MINT,            "صح ولا غلط؟"),
+    "emergency": (RED,            (255, 154, 144), "علامات طوارئ"),
 }
-_t = THEMES.get(os.environ.get("POST_THEME", "ocean"), THEMES["ocean"])
-NAVY, BLUE, SKY = _t["NAVY"], _t["BLUE"], _t["SKY"]
-INK = tuple(int(c * 0.85) for c in NAVY)
+_SER = os.environ.get("POST_SERIES", "general")
+ACC, ACC_INK, SER_LABEL = SERIES.get(_SER, SERIES["general"])
 
-NAME = "توماس سمير فوزي • طالب طب بشري"
+# legacy names used by make_story.py / make_reel.py
+NAVY = INK
+BLUE = ACC
+SKY = TINT
+MUTED = MUTE
+
+NAME = "توماس سمير فوزي · طالب طب بشري"
 USER = "@thomassamir_medical_student"
 AR_DIGITS = str.maketrans("0123456789", "٠١٢٣٤٥٦٧٨٩")
+_EMOJI = re.compile("[\U0001F000-\U0001FAFF☀-➿️‍]+")
+PHOTO = os.environ.get("POST_PHOTO", os.path.join(ROOT, "assets", "thomas.jpg"))
+
+# ---- fonts: Alexandria (display, weight >= 700 headings) + IBM Plex Sans Arabic (body) ----
+_PLEX = {400: "IBMPlexSansArabic-Regular.ttf", 500: "IBMPlexSansArabic-Medium.ttf",
+         600: "IBMPlexSansArabic-SemiBold.ttf", 700: "IBMPlexSansArabic-Bold.ttf"}
+_fcache = {}
 
 
-_EMOJI = re.compile("[\U0001F000-\U0001FAFF\u2600-\u27BF\uFE0F\u200d]+")
-
-
-# Font pairings (Google Fonts, OFL) — pick with env POST_FONTS=<name>; rotate like themes.
-# Weights >= 800 use the heading font, lower weights use the body font.
-# Each entry: variable font file, or {weight: static file}.
-_FD = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "fonts")
-_IBM = {400: "IBMPlexSansArabic-Regular.ttf", 500: "IBMPlexSansArabic-Medium.ttf",
-        600: "IBMPlexSansArabic-SemiBold.ttf", 700: "IBMPlexSansArabic-Bold.ttf"}
-_ALM = {400: "Almarai-Regular.ttf", 700: "Almarai-Bold.ttf", 800: "Almarai-ExtraBold.ttf"}
-_TAJ = {500: "Tajawal-Medium.ttf", 700: "Tajawal-Bold.ttf", 800: "Tajawal-ExtraBold.ttf",
-        900: "Tajawal-Black.ttf"}
-FONT_PAIRS = {
-    "cairo":    ("Cairo.ttf", "Cairo.ttf"),                 # the original look
-    "bold":     ("Changa.ttf", _IBM),                       # strong condensed headings + IBM Plex
-    "modern":   ("Alexandria.ttf", "ReadexPro.ttf"),        # geometric, premium
-    "classic":  ("ElMessiri.ttf", _ALM),                    # refined, calm
-    "clean":    ("NotoKufiArabic.ttf", "Vazirmatn.ttf"),    # crisp, very readable
-    "warm":     ("BalooBhaijaan2.ttf", _TAJ),               # soft and friendly (parents/youth)
-}
-_PAIR = FONT_PAIRS.get(os.environ.get("POST_FONTS", "cairo"), FONT_PAIRS["cairo"])
-if "CAROUSEL_FONT" in os.environ:
-    _PAIR = (FONT, FONT)
-
-
-def _load(spec, size, weight):
-    if isinstance(spec, dict):
-        w = min(spec, key=lambda k: abs(k - weight))
-        return ImageFont.truetype(os.path.join(_FD, spec[w]) if not os.path.isabs(spec[w]) else spec[w], size)
-    path = spec if os.path.isabs(spec) else os.path.join(_FD, spec)
-    f = ImageFont.truetype(path, size)
+def _alex(size, weight):
+    f = ImageFont.truetype(os.path.join(FD, "Alexandria.ttf"), size)
     try:
-        axes = f.get_variation_axes()
+        vals = []
+        for a in f.get_variation_axes():
+            n = a.get("name", b"")
+            n = n.decode() if isinstance(n, bytes) else str(n)
+            vals.append(max(a["minimum"], min(a["maximum"], weight)) if n.lower() in ("weight", "wght") else a.get("default", a["minimum"]))
+        f.set_variation_by_axes(vals)
     except Exception:
-        return f
-    vals = []
-    for a in axes:
-        name = a.get("name", b"")
-        name = name.decode() if isinstance(name, bytes) else str(name)
-        if name.lower() in ("weight", "wght"):
-            vals.append(max(a["minimum"], min(a["maximum"], weight)))
-        else:
-            vals.append(a.get("default", a["minimum"]))
-    f.set_variation_by_axes(vals)
+        pass
     return f
 
 
+def display(size, weight=800):
+    k = ("d", size, weight)
+    if k not in _fcache:
+        _fcache[k] = _alex(size, weight)
+    return _fcache[k]
+
+
+def text_font(size, weight=500):
+    k = ("t", size, weight)
+    if k not in _fcache:
+        w = min(_PLEX, key=lambda x: abs(x - weight))
+        _fcache[k] = ImageFont.truetype(os.path.join(FD, _PLEX[w]), size)
+    return _fcache[k]
+
+
 def font(size, weight=700):
-    return _load(_PAIR[0] if weight >= 800 else _PAIR[1], size, weight)
+    """Legacy helper: heavy weights -> Alexandria, the rest -> IBM Plex."""
+    return display(size, min(weight, 800)) if weight >= 800 else text_font(size, weight)
+
+
+def clean(t):
+    return _EMOJI.sub("", t or "").strip()
 
 
 def wrap(draw, text, f, maxw, rtl=True):
-    text = _EMOJI.sub("", text or "").strip()  # font has no emoji glyphs
     lines = []
-    for para in text.split("\n"):
+    for para in clean(text).split("\n"):
         words, cur = para.split(" "), ""
         for w in words:
             t = (cur + " " + w).strip()
@@ -101,248 +129,457 @@ def wrap(draw, text, f, maxw, rtl=True):
                     lines.append(cur)
                 cur = w
         lines.append(cur)
+    # avoid a lonely last word when the paragraph wrapped
+    if len(lines) >= 2 and len(lines[-1].split()) == 1 and len(lines[-2].split()) >= 3:
+        prev = lines[-2].split()
+        cand = " ".join(prev[:-1]), prev[-1] + " " + lines[-1]
+        if draw.textlength(cand[1], font=f, direction="rtl") <= maxw:
+            lines[-2:] = list(cand)
     return lines
 
 
-def draw_block(draw, text, f, y, color, maxw=W - 2 * M, gap=1.45, align="right", right=W - M):
+def text_h(f, lines, lh):
+    return 0 if not lines else (len(lines) - 1) * int(f.size * lh) + f.size
+
+
+def draw_lines(d, lines, f, y, color, lh, right=W - M, colors=None):
+    for k, line in enumerate(lines):
+        tw = d.textlength(line, font=f, direction="rtl")
+        d.text((right - tw, y), line, font=f, fill=(colors[k] if colors else color), direction="rtl")
+        y += int(f.size * lh)
+    return y - int(f.size * lh) + f.size if lines else y
+
+
+def draw_block(d, text, f, y, color, maxw=W - 2 * M, gap=1.45, align="right", right=W - M):
+    """Legacy helper kept for make_reel.py."""
     lh = int(f.size * gap)
-    for line in wrap(draw, text, f, maxw):
-        tw = draw.textlength(line, font=f, direction="rtl")
+    for line in wrap(d, text, f, maxw):
+        tw = d.textlength(line, font=f, direction="rtl")
         x = right - tw if align == "right" else (W - tw) / 2
-        draw.text((x, y), line, font=f, fill=color, direction="rtl")
+        d.text((x, y), line, font=f, fill=color, direction="rtl")
         y += lh
     return y
 
 
-def block_height(draw, text, f, maxw=W - 2 * M, gap=1.45):
-    return len(wrap(draw, text, f, maxw)) * int(f.size * gap)
+def block_height(d, text, f, maxw=W - 2 * M, gap=1.45):
+    return len(wrap(d, text, f, maxw)) * int(f.size * gap)
 
 
-PHOTO = os.environ.get("POST_PHOTO", os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "assets", "thomas.jpg"))
-_photo_cache = {}
+# ---------- furniture ----------
+def canvas(ground):
+    img = Image.new("RGB", (W, H), ground)
+    return img, ImageDraw.Draw(img)
 
 
-def _photo_layer(mode):
-    """Thomas's photo sized for the slide. cover: him in the lower part; inner: full frame."""
-    if mode in _photo_cache:
-        return _photo_cache[mode]
-    ph = Image.open(PHOTO).convert("RGB")
-    s = W / ph.width
-    ph = ph.resize((W, int(ph.height * s)), Image.LANCZOS)
-    face_y = int(ph.height * 0.27)          # face sits ~27% down the original photo
-    target = 900 if mode == "cover" else 560
-    canvas = Image.new("RGB", (W, H), SKY)
-    off = target - face_y
-    if mode != "cover":
-        off = max(H - ph.height, min(0, off))  # inner slides: fill the whole frame
-    canvas.paste(ph, (0, off))
-    _photo_cache[mode] = canvas
-    return canvas
-
-
-def background(accent, mode="inner"):
-    img = Image.new("RGB", (W, H), WHITE)
-    d = ImageDraw.Draw(img)
-    # soft vertical gradient
-    for y in range(H):
-        t = y / H
-        c = tuple(int(WHITE[i] * (1 - t) + SKY[i] * t) for i in range(3))
-        d.line([(0, y), (W, y)], fill=c)
-    if PHOTO and os.path.exists(PHOTO):
-        # photo behind everything, under a tinted veil so the text stays crisp
-        ph = _photo_layer(mode)
-        veil = img.copy()
-        if mode == "cover":
-            # opaque behind the text (top), clear over the face, light again behind the footer
-            mask = Image.new("L", (W, H))
-            md = ImageDraw.Draw(mask)
-            for y in range(H):
-                if y < 560:
-                    a = 238
-                elif y < 760:
-                    a = int(238 - (y - 560) / 200 * 205)
-                elif y < 1120:
-                    a = 33
-                else:
-                    a = int(33 + (y - 1120) / 230 * 200)
-                md.line([(0, y), (W, y)], fill=a)
-        else:
-            mask = Image.new("L", (W, H), 212)  # ~83% veil: text crisp, face still visible
-        img = Image.composite(veil, ph, mask)
-        d = ImageDraw.Draw(img)
-    else:
-        c1 = tuple(int(SKY[i] * 0.82 + BLUE[i] * 0.18) for i in range(3))
-        c2 = tuple(int(SKY[i] * 0.9 + BLUE[i] * 0.1) for i in range(3))
-        d.ellipse([W - 260, -200, W + 200, 260], fill=c1)
-        d.ellipse([-180, H - 520, 220, H - 120], fill=c2)
-    # top accent bar
-    d.rectangle([0, 0, W, 14], fill=accent)
-    return img, d
-
-
-def footer(d):
-    y = H - 150
-    d.line([(M, y), (W - M, y)], fill=(200, 215, 235), width=2)
-    f1, f2 = font(34, 700), font(32, 600)
-    tw = d.textlength(NAME, font=f1, direction="rtl")
-    d.text(((W - tw) / 2, y + 18), NAME, font=f1, fill=NAVY, direction="rtl")
-    tw = d.textlength(USER, font=f2)
-    d.text(((W - tw) / 2, y + 66), USER, font=f2, fill=BLUE)
-
-
-def counter(d, i, n):
-    txt = f"{i}/{n}".translate(AR_DIGITS)
-    f = font(30, 700)
-    tw = d.textlength(txt, font=f)
-    d.rounded_rectangle([M - 10, 60, M + tw + 30, 112], radius=26, fill=WHITE, outline=(200, 215, 235), width=2)
-    d.text((M + 10, 64), txt, font=f, fill=MUTED)
-
-
-def tag(d, text, color, y=60):
-    f = font(32, 800)
+def badge(d, text, fill, y=56, txt=WHITE):
+    f = text_font(30, 600)
     tw = d.textlength(text, font=f, direction="rtl")
-    d.rounded_rectangle([W - M - tw - 40, y, W - M, y + 56], radius=28, fill=color)
-    d.text((W - M - tw - 20, y + 4), text, font=f, fill=WHITE, direction="rtl")
+    d.rounded_rectangle([W - M - tw - 44, y, W - M, y + 58], radius=10, fill=fill)
+    d.text((W - M - tw - 22, y + 7), text, font=f, fill=txt, direction="rtl")
+
+
+def mark(d, i, n, color=MUTE, y=64):
+    t = f"{i} / {n}".translate(AR_DIGITS)
+    d.text((M, y), t, font=text_font(30, 600), fill=color, direction="rtl")
+
+
+def footer(d, i, n, dark=False, label=NAME, acc=None):
+    acc = acc or (ACC_INK if dark else ACC)
+    y = H - 56 - 34
+    f = text_font(28, 600)
+    tw = d.textlength(label, font=f, direction="rtl")
+    d.text((W - M - tw, y), label, font=f, fill=(WHITE if dark else INK), direction="rtl")
+    seg, gap = 30, 8
+    total = n * seg + (n - 1) * gap
+    x0 = M
+    for k in range(n):
+        # RTL: slide 1 is the rightmost segment
+        idx = n - 1 - k
+        x = x0 + k * (seg + gap)
+        on = idx == i - 1
+        col = acc if on else ((47, 71, 83) if dark else LINE)
+        d.rounded_rectangle([x, y + 16, x + seg, y + 24], radius=4, fill=col)
+
+
+def acc_line(d, y, color, w=120):
+    d.rounded_rectangle([W - M - w, y, W - M, y + 6], radius=3, fill=color)
+    return y + 6
+
+
+def swipe(d, y, color, text="اسحب للشمال"):
+    f = text_font(34, 700)
+    tw = d.textlength(text, font=f, direction="rtl")
+    d.text((W - M - tw, y), text, font=f, fill=color, direction="rtl")
+    lx = W - M - tw - 24
+    d.rounded_rectangle([lx - 74, y + 26, lx, y + 31], radius=2, fill=color)
+    d.polygon([(lx - 86, y + 28), (lx - 64, y + 15), (lx - 64, y + 41)], fill=color)
+    return y + 50
+
+
+def _photo():
+    if not (PHOTO and os.path.exists(PHOTO)):
+        return None
+    return Image.open(PHOTO).convert("RGB")
+
+
+def avatar(img, cx, cy, r, ring):
+    ph = _photo()
+    if ph is None:
+        return
+    s = ph.width
+    crop = ph.crop((int(s * 0.18), int(ph.height * 0.12), int(s * 0.82), int(ph.height * 0.12) + int(s * 0.64)))
+    crop = crop.resize((2 * r, 2 * r), Image.LANCZOS)
+    d = ImageDraw.Draw(img)
+    d.ellipse([cx - r - 9, cy - r - 9, cx + r + 9, cy + r + 9], fill=ring)
+    d.ellipse([cx - r - 5, cy - r - 5, cx + r + 5, cy + r + 5], fill=WHITE)
+    m = Image.new("L", crop.size, 0)
+    ImageDraw.Draw(m).ellipse([0, 0, 2 * r, 2 * r], fill=255)
+    img.paste(crop, (cx - r, cy - r), m)
+
+
+def vcenter(total, top=170, bottom=H - FOOT - 40):
+    return max(top, top + (bottom - top - total) / 2)
+
+
+# ---------- covers ----------
+def cover_face(s, i, n):
+    img, d = canvas(INK)
+    fk, ft, fb = text_font(36, 600), display(100, 800), text_font(42, 500)
+    kl = wrap(d, s.get("kicker", ""), fk, W - 2 * M) if s.get("kicker") else []
+    tl = wrap(d, s["title"], ft, W - 2 * M)
+    bl = wrap(d, s.get("body", ""), fb, W - 2 * M) if s.get("body") else []
+    y = 190
+    y_text_end = y + (text_h(fk, kl, 1.4) + 24 if kl else 0) + text_h(ft, tl, 1.3) + (28 + text_h(fb, bl, 1.5) if bl else 0) + 40 + 50
+    top = int(min(max(H * 0.44, y_text_end + 30), 780))
+    ph = _photo()
+    if ph is not None:
+        sc = W / ph.width
+        ph = ph.resize((W, int(ph.height * sc)), Image.LANCZOS)
+        off = -int((ph.height - (H - top)) * 0.08)
+        region = Image.new("RGB", (W, H - top), INK)
+        region.paste(ph, (0, off))
+        img.paste(region, (0, top))
+        # fades: ink into the photo at the top, darker behind the footer
+        ov = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        od = ImageDraw.Draw(ov)
+        fade = 160
+        for yy in range(top, top + fade):
+            a = int(150 * (1 - (yy - top) / fade))
+            od.line([(0, yy), (W, yy)], fill=INK + (a,))
+        start = int(H * 0.8)
+        for yy in range(start, H):
+            a = int(225 * (yy - start) / (H - start))
+            od.line([(0, yy), (W, yy)], fill=INK + (a,))
+        img = Image.alpha_composite(img.convert("RGBA"), ov).convert("RGB")
+        d = ImageDraw.Draw(img)
+    badge(d, s.get("badge", SER_LABEL), ACC)
+    mark(d, i, n, MUTE_ON_INK)
+    if kl:
+        y = draw_lines(d, kl, fk, y, ACC_INK, 1.4) + 24
+    hl = s.get("highlight_line", len(tl) - 1 if len(tl) > 1 else -1)
+    cols = [MINT if k == hl else WHITE for k in range(len(tl))]
+    y = draw_lines(d, tl, ft, y, WHITE, 1.3, colors=cols)
+    if bl:
+        y = draw_lines(d, bl, fb, y + 28, BODY_ON_INK, 1.5)
+    swipe(d, y + 40, WHITE)
+    footer(d, i, n, dark=True)
+    return img
+
+
+def cover_numeral(s, i, n):
+    img, d = canvas(PAPER)
+    badge(d, s.get("badge", SER_LABEL), ACC)
+    mark(d, i, n)
+    num = str(s.get("num", "")).translate(AR_DIGITS)
+    fn = display(440, 800)
+    bb = d.textbbox((0, 0), num, font=fn)
+    nw = bb[2] - bb[0]
+    ny = 150
+    d.text((W - M - bb[2], ny - bb[1] + 20), num, font=fn, fill=ACC)
+    num_bottom = ny + 20 + (bb[3] - bb[1])
+    right = W - M - nw - 40
+    maxw = right - M
+    fk, ft = text_font(34, 600), display(84, 800)
+    kl = wrap(d, s.get("kicker", ""), fk, maxw) if s.get("kicker") else []
+    tl = wrap(d, s["title"], ft, maxw)
+    blk = (text_h(fk, kl, 1.4) + 18 if kl else 0) + text_h(ft, tl, 1.25)
+    y = max(190, num_bottom - blk - 10)
+    if kl:
+        y = draw_lines(d, kl, fk, y, ACC, 1.4, right=right) + 18
+    draw_lines(d, tl, ft, y, INK, 1.25, right=right)
+    y = max(num_bottom, y) + 90
+    if s.get("body"):
+        fb = text_font(44, 500)
+        y = draw_lines(d, wrap(d, s["body"], fb, W - 2 * M), fb, y, BODY, 1.55) + 40
+    swipe(d, y + 10, ACC)
+    avatar(img, M + 70, int(y + 35), 62, ACC)
+    footer(d, i, n)
+    return img
+
+
+def cover_question(s, i, n):
+    img, d = canvas(PAPER)
+    badge(d, s.get("badge", SERIES["quiz"][2]), ACC)
+    mark(d, i, n)
+    fk, ft = text_font(36, 600), display(92, 800)
+    y = 190
+    if s.get("kicker"):
+        y = draw_lines(d, wrap(d, s["kicker"], fk, W - 2 * M), fk, y, ACC, 1.4) + 20
+    y = draw_lines(d, wrap(d, s["title"], ft, W - 2 * M), ft, y, INK, 1.3) + 60
+    fs = display(58, 700)
+    sl = wrap(d, s.get("statement", ""), fs, W - 2 * M - 110)
+    ch = text_h(fs, sl, 1.35) + 100
+    d.rounded_rectangle([M, y, W - M, y + ch], radius=24, fill=WHITE)
+    draw_lines(d, sl, fs, y + 50, INK, 1.35, right=W - M - 55)
+    y += ch + 26
+    bw = (W - 2 * M - 24) / 2
+    fc = display(60, 800)
+    for k, (lab, bg, fg) in enumerate([("غلط", RED_TINT, RED), ("صح", TINT, TEAL)]):
+        x1 = W - M - k * (bw + 24)
+        d.rounded_rectangle([x1 - bw, y, x1, y + 120], radius=20, fill=bg)
+        tw = d.textlength(lab, font=fc, direction="rtl")
+        d.text((x1 - bw / 2 - tw / 2, y + 18), lab, font=fc, fill=fg, direction="rtl")
+    y += 120 + 34
+    swipe(d, y, ACC, "جاوب واسحب")
+    footer(d, i, n)
+    return img
+
+
+def red_band(d, text, i, n):
+    d.rectangle([0, 0, W, 150], fill=RED)
+    f = display(46, 800)
+    tw = d.textlength(text, font=f, direction="rtl")
+    d.text((W - M - tw, 44), text, font=f, fill=WHITE, direction="rtl")
+    mark(d, i, n, WHITE, y=58)
+
+
+def cover_alert(s, i, n):
+    img, d = canvas(PAPER)
+    red_band(d, s.get("band", SERIES["emergency"][2]), i, n)
+    fk, ft, fb = text_font(36, 600), display(100, 800), text_font(44, 500)
+    kl = wrap(d, s.get("kicker", ""), fk, W - 2 * M) if s.get("kicker") else []
+    tl = wrap(d, s["title"], ft, W - 2 * M)
+    bl = wrap(d, s.get("body", ""), fb, W - 2 * M) if s.get("body") else []
+    total = (text_h(fk, kl, 1.4) + 22 if kl else 0) + text_h(ft, tl, 1.3) + 40 + 6 + (34 + text_h(fb, bl, 1.5) if bl else 0) + 40 + 50
+    y = vcenter(total, top=250)
+    if kl:
+        y = draw_lines(d, kl, fk, y, RED, 1.4) + 22
+    y = draw_lines(d, tl, ft, y, INK, 1.3) + 40
+    y = acc_line(d, y, RED)
+    if bl:
+        y = draw_lines(d, bl, fb, y + 34, BODY, 1.5)
+    swipe(d, y + 40, RED)
+    avatar(img, M + 70, int(y + 65), 62, RED)
+    footer(d, i, n, acc=RED)
+    return img
 
 
 def slide_cover(s, i, n):
-    accent = RED if s.get("alert") else BLUE
-    img, d = background(accent, mode="cover")
-    counter(d, i, n)
-    if s.get("kicker"):
-        tag(d, s["kicker"], accent)
-    ft, fb = font(92, 900), font(46, 600)
-    th = block_height(d, s["title"], ft, gap=1.3)
-    bh = block_height(d, s.get("body", ""), fb) if s.get("body") else 0
-    y = 150 if (PHOTO and os.path.exists(PHOTO)) else (H - 150 - th - bh - 60) / 2 + 40
-    y = draw_block(d, s["title"], ft, y, NAVY, gap=1.3)
-    d.rounded_rectangle([W - M - 160, y + 25, W - M, y + 37], radius=6, fill=accent)
-    yb = y + 37
-    if s.get("body"):
-        yb = draw_block(d, s["body"], fb, y + 70, INK)
-    # swipe hint (under the text when the photo fills the lower half)
-    f = font(38, 800)
-    hint = "اسحب للشمال"
-    tw = d.textlength(hint, font=f, direction="rtl")
-    has_photo = PHOTO and os.path.exists(PHOTO)
-    x0 = W - M - tw - 80 if has_photo else (W - tw - 80) / 2
-    hy = yb + 20 if has_photo else H - 235
-    d.text((x0 + 80, hy), hint, font=f, fill=accent, direction="rtl")
-    ay = hy + 28
-    d.line([(x0, ay), (x0 + 55, ay)], fill=accent, width=6)
-    d.polygon([(x0 - 6, ay), (x0 + 18, ay - 16), (x0 + 18, ay + 16)], fill=accent)
-    footer(d)
-    return img
+    lay = s.get("layout") or ("alert" if s.get("alert") else "face")
+    return {"face": cover_face, "numeral": cover_numeral, "question": cover_question, "alert": cover_alert}[lay](s, i, n)
 
 
+# ---------- inner slides ----------
 def slide_point(s, i, n):
-    accent = RED if s.get("alert") else BLUE
-    img, d = background(accent)
-    counter(d, i, n)
+    if s.get("alert"):
+        return slide_redflags(s, i, n)
+    img, d = canvas(PAPER)
     if s.get("kicker"):
-        tag(d, s["kicker"], accent)
-    ft, fb = font(82, 900), font(50, 600)
-    inner = W - 2 * M - 110
-    r = 90
-    th = block_height(d, s["title"], ft, gap=1.35)
-    bh = block_height(d, s.get("body", ""), fb, maxw=inner) if s.get("body") else 0
-    total = (2 * r + 50 if s.get("num") is not None else 0) + th + (bh + 100 if bh else 0)
-    y = max(170, (H - 170 - total) / 2 + 20)
-    if s.get("num") is not None:
-        cx = W - M - r
-        d.ellipse([cx - r, y, cx + r, y + 2 * r], fill=accent)
+        badge(d, s["kicker"], ACC)
+    mark(d, i, n)
+    fn, ft, fb = display(220, 800), display(76, 700), text_font(44, 500)
+    tl = wrap(d, s["title"], ft, W - 2 * M)
+    bl = wrap(d, s.get("body", ""), fb, W - 2 * M) if s.get("body") else []
+    has_num = s.get("num") is not None
+    total = (230 if has_num else 0) + text_h(ft, tl, 1.38) + 40 + 6 + (40 + text_h(fb, bl, 1.6) if bl else 0)
+    y = vcenter(total, top=180)
+    if has_num:
         num = str(s["num"]).translate(AR_DIGITS)
-        fn = font(120, 900)
         bb = d.textbbox((0, 0), num, font=fn)
-        d.text((cx - (bb[0] + bb[2]) / 2, y + r - (bb[1] + bb[3]) / 2), num, font=fn, fill=WHITE)
-        y += 2 * r + 50
-    y = draw_block(d, s["title"], ft, y, NAVY, gap=1.35)
-    y += 40
-    if s.get("body"):
-        d.rounded_rectangle([M, y, W - M, y + bh + 70], radius=36, fill=WHITE, outline=(205, 222, 245), width=3)
-        d.rounded_rectangle([W - M - 14, y + 28, W - M - 2, y + bh + 42], radius=6, fill=accent)
-        draw_block(d, s["body"], fb, y + 28, INK, maxw=inner, right=W - M - 55)
-    footer(d)
+        d.text((W - M - bb[2], y - bb[1]), num, font=fn, fill=ACC)
+        y += (bb[3] - bb[1]) + 50
+    y = draw_lines(d, tl, ft, y, INK, 1.38) + 40
+    y = acc_line(d, y, ACC)
+    if bl:
+        draw_lines(d, bl, fb, y + 40, BODY, 1.6)
+    footer(d, i, n)
     return img
 
 
-def slide_cta(s, i, n):
-    img, d = background(BLUE)
-    counter(d, i, n)
-    y = 200
-    y = draw_block(d, s["title"], font(76, 900), y, NAVY, gap=1.35)
+def slide_redflags(s, i, n):
+    img, d = canvas(PAPER)
+    red_band(d, s.get("kicker", "الطوارئ فورًا لو"), i, n)
+    ft, fi, fb = display(70, 700), text_font(50, 600), text_font(44, 500)
+    tl = wrap(d, s.get("title", ""), ft, W - 2 * M) if s.get("title") else []
+    items = s.get("items") or []
+    il = [wrap(d, it, fi, W - 2 * M - 50) for it in items]
+    bl = wrap(d, s.get("body", ""), fb, W - 2 * M) if (s.get("body") and not items) else []
+    total = (text_h(ft, tl, 1.38) + 56 if tl else 0) + sum(text_h(fi, l, 1.4) + 44 for l in il) + (text_h(fb, bl, 1.6) if bl else 0)
+    y = vcenter(total, top=240)
+    if tl:
+        y = draw_lines(d, tl, ft, y, INK, 1.38) + 56
+    for l in il:
+        d.rounded_rectangle([W - M - 20, y + 22, W - M, y + 42], radius=4, fill=RED)
+        y = draw_lines(d, l, fi, y, INK, 1.4, right=W - M - 50) + 44
+    if bl:
+        draw_lines(d, bl, fb, y, BODY, 1.6)
+    footer(d, i, n, acc=RED)
+    return img
+
+
+def slide_myth(s, i, n):
+    img, d = canvas(PAPER)
+    split = int(H * 0.42)
+    d.rectangle([0, 0, W, split], fill=MYTH_BG)
+    mark(d, i, n)
+    fl = text_font(32, 700)
+
+    def label(y, txt, col):
+        d.ellipse([W - M - 18, y + 14, W - M, y + 32], fill=col)
+        tw = d.textlength(txt, font=fl, direction="rtl")
+        d.text((W - M - 32 - tw, y), txt, font=fl, fill=col, direction="rtl")
+        return y + 60
+
+    fm = display(62, 700)
+    ml = wrap(d, s.get("myth", ""), fm, W - 2 * M)
+    mh = 60 + text_h(fm, ml, 1.3)
+    y = max(150, split - 50 - mh)
+    y = label(y, "الخرافة", RED)
+    for line in ml:
+        tw = d.textlength(line, font=fm, direction="rtl")
+        d.text((W - M - tw, y), line, font=fm, fill=MYTH_TXT, direction="rtl")
+        bb = d.textbbox((W - M - tw, y), line, font=fm, direction="rtl")
+        cy = (bb[1] + bb[3]) // 2 + 4
+        d.line([(bb[0], cy), (bb[2], cy)], fill=RED, width=5)
+        y += int(fm.size * 1.3)
+    y = split + 60
+    y = label(y, "الحقيقة", TEAL)
+    ft, fb = display(68, 700), text_font(44, 500)
+    y = draw_lines(d, wrap(d, s["title"], ft, W - 2 * M), ft, y, INK, 1.38) + 30
     if s.get("body"):
-        y = draw_block(d, s["body"], font(44, 600), y + 36, INK)
-    y += 50
-    actions = s.get("actions", [
-        ("تابعني", "عشان بوست طبي جديد كل يوم"),
-        ("احفظ البوست", "هتحتاجه في وقت مش متوقع"),
-        ("ابعته", "لحد بتحبه وخايف عليه"),
-        ("اكتبلي في الكومنت", "عايز البوست الجاي عن إيه؟"),
-    ])
-    fa, fs = font(46, 700), font(36, 600)  # body font: tall display headings collided with the subtitle
-    for a, sub in actions:
-        if y + 130 > H - (240 if s.get("source") else 170):
-            break  # no room left above the source line / footer
-        d.rounded_rectangle([M, y, W - M, y + 130], radius=30, fill=WHITE, outline=(205, 222, 245), width=3)
-        d.ellipse([W - M - 100, y + 35, W - M - 40, y + 95], fill=BLUE)
-        cx, cy = W - M - 70, y + 65
-        d.line([(cx - 14, cy), (cx - 4, cy + 11), (cx + 15, cy - 11)], fill=WHITE, width=7, joint="curve")
-        tw = d.textlength(a, font=fa, direction="rtl")
-        d.text((W - M - 130 - tw, y + 12), a, font=fa, fill=NAVY, direction="rtl")
-        tw = d.textlength(sub, font=fs, direction="rtl")
-        d.text((W - M - 130 - tw, y + 72), sub, font=fs, fill=MUTED, direction="rtl")
-        y += 155
+        draw_lines(d, wrap(d, s["body"], fb, W - 2 * M), fb, y, BODY, 1.6)
+    footer(d, i, n)
+    return img
+
+
+def slide_answer(s, i, n):
+    img, d = canvas(PAPER)
+    ok = s.get("verdict", "صح") == "صح"
+    col, bg = (TEAL, TINT) if ok else (RED, RED_TINT)
+    if s.get("kicker"):
+        badge(d, s["kicker"], ACC)
+    mark(d, i, n)
+    fv, ft, fb = display(64, 800), display(72, 700), text_font(44, 500)
+    tl = wrap(d, s["title"], ft, W - 2 * M)
+    bl = wrap(d, s.get("body", ""), fb, W - 2 * M) if s.get("body") else []
+    total = 130 + 50 + text_h(ft, tl, 1.38) + (36 + text_h(fb, bl, 1.6) if bl else 0)
+    y = vcenter(total, top=180)
+    v = "الإجابة: " + s.get("verdict", "صح")
+    tw = d.textlength(v, font=fv, direction="rtl")
+    d.rounded_rectangle([W - M - tw - 70, y, W - M, y + 120], radius=20, fill=bg)
+    d.text((W - M - 35 - tw, y + 18), v, font=fv, fill=col, direction="rtl")
+    y += 170
+    y = draw_lines(d, tl, ft, y, INK, 1.38)
+    if bl:
+        draw_lines(d, bl, fb, y + 36, BODY, 1.6)
+    footer(d, i, n)
+    return img
+
+
+def slide_data(s, i, n):
+    img, d = canvas(PAPER)
+    badge(d, s.get("kicker", "بالأرقام"), ACC)
+    mark(d, i, n)
+    ft, fl = display(72, 700), text_font(36, 600)
+    tl = wrap(d, s["title"], ft, W - 2 * M)
+    bars = s.get("bars", [])
+    total = text_h(ft, tl, 1.38) + 70 + len(bars) * 140 + 60
+    y = vcenter(total, top=180)
+    y = draw_lines(d, tl, ft, y, INK, 1.38) + 70
+    for b in bars:
+        lab, val = clean(b.get("label", "")), clean(str(b.get("value", ""))).translate(AR_DIGITS)
+        tw = d.textlength(lab, font=fl, direction="rtl")
+        d.text((W - M - tw, y), lab, font=fl, fill=INK, direction="rtl")
+        d.text((M, y), val, font=fl, fill=INK, direction="rtl")
+        y += 60
+        d.rounded_rectangle([M, y, W - M, y + 48], radius=10, fill=(227, 233, 231))
+        pw = max(48, (W - 2 * M) * float(b.get("pct", 50)) / 100)
+        d.rounded_rectangle([W - M - pw, y, W - M, y + 48], radius=10, fill=(ACC if b.get("hi") else (157, 179, 176)))
+        y += 80
     src = s.get("source")
     if src:
-        fs = font(28, 600)
+        f = text_font(28, 600)
         line = "المصدر: " + src
-        tw = d.textlength(line, font=fs, direction="rtl")
-        d.text(((W - tw) / 2, H - 200), line, font=fs, fill=MUTED, direction="rtl")
-    footer(d)
+        tw = d.textlength(line, font=f, direction="rtl")
+        d.text((W - M - tw, y + 10), line, font=f, fill=MUTE, direction="rtl")
+    footer(d, i, n)
     return img
 
 
 def slide_checklist(s, i, n):
-    """Summary slide people save: title + short checked items ("احفظها")."""
-    img, d = background(BLUE)
-    counter(d, i, n)
-    tag(d, s.get("kicker", "احفظ البوست"), BLUE)
-    y = draw_block(d, s["title"], font(70, 900), 220, NAVY, gap=1.3) + 40
-    fi = font(44, 700)
-    for item in s.get("items", []):
-        lines = wrap(d, item, fi, W - 2 * M - 120)
-        h = len(lines) * int(fi.size * 1.4) + 40
-        if y + h > H - 190:
+    img, d = canvas(TINT)
+    badge(d, s.get("kicker", "احفظها"), ACC)
+    mark(d, i, n)
+    ft, fi = display(72, 700), text_font(42, 600)
+    tl = wrap(d, s.get("title", "الخلاصة في صورة واحدة"), ft, W - 2 * M)
+    rows = [wrap(d, it, fi, W - 2 * M - 140) for it in s.get("items", [])]
+    rh = [text_h(fi, r, 1.4) + 52 for r in rows]
+    total = text_h(ft, tl, 1.38) + 50 + sum(rh) + 22 * (len(rows) - 1)
+    y = vcenter(total, top=180)
+    y = draw_lines(d, tl, ft, y, INK, 1.38) + 50
+    for r, h in zip(rows, rh):
+        if y + h > H - FOOT - 10:
             break
-        d.rounded_rectangle([M, y, W - M, y + h], radius=26, fill=WHITE, outline=(205, 222, 245), width=3)
-        cx, cy = W - M - 50, y + h / 2
-        d.ellipse([cx - 26, cy - 26, cx + 26, cy + 26], fill=BLUE)
-        d.line([(cx - 11, cy), (cx - 3, cy + 9), (cx + 12, cy - 9)], fill=WHITE, width=6, joint="curve")
-        # centre the text block vertically using the real ink box (fonts differ in metrics)
+        d.rounded_rectangle([M, y, W - M, y + h], radius=18, fill=WHITE)
+        cx, cy = W - M - 58, y + h / 2
+        d.ellipse([cx - 28, cy - 28, cx + 28, cy + 28], fill=ACC)
+        d.line([(cx - 12, cy + 1), (cx - 3, cy + 10), (cx + 13, cy - 9)], fill=WHITE, width=7, joint="curve")
         bb = d.textbbox((0, 0), "علامة", font=fi, direction="rtl")
-        ink_h = (len(lines) - 1) * int(fi.size * 1.4) + (bb[3] - bb[1])
-        ty = y + (h - ink_h) / 2 - bb[1]
-        draw_block(d, item, fi, ty, INK, maxw=W - 2 * M - 120, gap=1.4, right=W - M - 95)
-        y += h + 18
-    footer(d)
+        ink_h = (len(r) - 1) * int(fi.size * 1.4) + (bb[3] - bb[1])
+        draw_lines(d, r, fi, y + (h - ink_h) / 2 - bb[1], INK, 1.4, right=W - M - 112)
+        y += h + 22
+    footer(d, i, n)
     return img
 
 
+def slide_cta(s, i, n):
+    img, d = canvas(INK)
+    mark(d, i, n, MUTE_ON_INK)
+    avatar(img, W - M - 110, 300, 104, MINT)
+    d = ImageDraw.Draw(img)
+    ft, fb, ff = display(76, 700), text_font(44, 500), text_font(44, 700)
+    y = 470
+    y = draw_lines(d, wrap(d, s["title"], ft, W - 2 * M), ft, y, WHITE, 1.38) + 34
+    if s.get("body"):
+        y = draw_lines(d, wrap(d, s["body"], fb, W - 2 * M), fb, y, BODY_ON_INK, 1.55) + 40
+    y = acc_line(d, y, MINT) + 40
+    y = draw_lines(d, ["تابعني عشان معلومة طبية كل يوم"], ff, y, WHITE, 1.4) + 30
+    if s.get("source"):
+        f = text_font(28, 600)
+        draw_lines(d, wrap(d, "المصدر: " + s["source"], f, W - 2 * M), f, y, MUTE_ON_INK, 1.4)
+    footer(d, i, n, dark=True, label=USER, acc=MINT)
+    return img
+
+
+TYPES = {"cover": slide_cover, "point": slide_point, "redflags": slide_redflags, "myth": slide_myth,
+         "answer": slide_answer, "data": slide_data, "checklist": slide_checklist, "cta": slide_cta}
+
+
 def main(spec_path, outdir):
+    global ACC, ACC_INK, SER_LABEL, BLUE
     spec = json.load(open(spec_path, encoding="utf-8"))
+    ser = os.environ.get("POST_SERIES") or spec.get("series") or spec.get("audience") or "general"
+    ACC, ACC_INK, SER_LABEL = SERIES.get(ser, SERIES["general"])
+    BLUE = ACC
     os.makedirs(outdir, exist_ok=True)
     slides = spec["slides"]
     n = len(slides)
     paths = []
-    spec_source = spec.get("source")
     for i, s in enumerate(slides, 1):
-        if s["type"] == "cta" and spec_source and "source" not in s:
-            s = dict(s, source=spec_source)
-        fn = {"cover": slide_cover, "point": slide_point, "cta": slide_cta,
-              "checklist": slide_checklist}[s["type"]]
-        img = fn(s, i, n)
-        p = os.path.join(outdir, f"slide_{i:02d}.jpg")  # Instagram publishing accepts JPEG
+        if s["type"] == "cta" and spec.get("source") and "source" not in s:
+            s = dict(s, source=spec["source"])
+        img = TYPES[s["type"]](s, i, n)
+        p = os.path.join(outdir, f"slide_{i:02d}.jpg")
         img.convert("RGB").save(p, "JPEG", quality=92, optimize=True)
         paths.append(p)
     print("\n".join(paths))
