@@ -7,6 +7,10 @@ Variety comes from the cover layout and the slide types, not from colours.
 
 Spec:
   "series": youth | parents | older | general | quiz | emergency   (POST_SERIES env overrides; falls back to "audience")
+  Every slide except the face cover and the closing takes an illustration:
+    "icon": a Tabler outline icon name (assets/icons/tabler/<name>.svg, e.g. heart, ambulance, lungs, toilet,
+            droplet, zzz, scale, stethoscope, phone-call, armchair, steering-wheel-off, baby-carriage, school)
+    "icon2" (optional): a small companion icon that completes the meaning (e.g. heart + clock = "sudden").
   slides (7-9):
     cover      layout: face | numeral | question | alert   (default face)
                kicker (who it is for), title (use \n for lines; last line is highlighted on the face cover),
@@ -237,6 +241,52 @@ def avatar(img, cx, cy, r, ring):
     img.paste(crop, (cx - r, cy - r), m)
 
 
+# ---------- illustrations (Tabler outline icons, MIT, in assets/icons/tabler) ----------
+ICON_DIRS = [os.path.join(ROOT, "assets", "icons", "tabler"), os.path.join(ROOT, "assets", "icons")]
+
+
+def icon_img(name, size, color, stroke=1.6):
+    import io
+    import cairosvg
+    path = next((os.path.join(dd, f"{name}.svg") for dd in ICON_DIRS if os.path.exists(os.path.join(dd, f"{name}.svg"))), None)
+    if path is None:
+        print(f"warning: icon '{name}' not found", file=sys.stderr)
+        return None
+    svg = open(path, encoding="utf-8").read()
+    svg = svg.replace("currentColor", "#%02x%02x%02x" % color)
+    svg = re.sub(r'stroke-width="[0-9.]+"', f'stroke-width="{stroke}"', svg)
+    png = cairosvg.svg2png(bytestring=svg.encode(), output_width=size, output_height=size)
+    return Image.open(io.BytesIO(png)).convert("RGBA")
+
+
+def mix(a, b, t):
+    return tuple(int(a[k] * (1 - t) + b[k] * t) for k in range(3))
+
+
+def spot(img, cx, cy, r, name, name2=None, acc=None, ground=PAPER):
+    """Spot illustration: tinted disc + big line icon (+ optional small companion icon)."""
+    if not name:
+        return
+    acc = acc or ACC
+    d = ImageDraw.Draw(img)
+    # dashed outer ring
+    rr = r + 22
+    for a in range(0, 360, 12):
+        d.arc([cx - rr, cy - rr, cx + rr, cy + rr], a, a + 6, fill=mix(ground, acc, 0.45), width=4)
+    d.ellipse([cx - r, cy - r, cx + r, cy + r], fill=mix(ground, acc, 0.14))
+    ic = icon_img(name, int(r * 1.25), acc, 1.5)
+    if ic is not None:
+        img.paste(ic, (int(cx - ic.width / 2), int(cy - ic.height / 2)), ic)
+    if name2:
+        sr = int(r * 0.42)
+        sx, sy = int(cx - r * 0.72), int(cy + r * 0.66)
+        d.ellipse([sx - sr - 6, sy - sr - 6, sx + sr + 6, sy + sr + 6], fill=acc)
+        d.ellipse([sx - sr, sy - sr, sx + sr, sy + sr], fill=WHITE)
+        ic2 = icon_img(name2, int(sr * 1.25), INK, 1.8)
+        if ic2 is not None:
+            img.paste(ic2, (int(sx - ic2.width / 2), int(sy - ic2.height / 2)), ic2)
+
+
 def vcenter(total, top=170, bottom=H - FOOT - 40):
     return max(top, top + (bottom - top - total) / 2)
 
@@ -357,13 +407,17 @@ def cover_alert(s, i, n):
     img, d = canvas(PAPER)
     red_band(d, s.get("band", SERIES["emergency"][2]), i, n)
     fk, ft, fb = text_font(36, 600), display(100, 800), text_font(44, 500)
+    tw_max = W - 2 * M - (360 if s.get("icon") else 0)
     kl = wrap(d, s.get("kicker", ""), fk, W - 2 * M) if s.get("kicker") else []
-    tl = wrap(d, s["title"], ft, W - 2 * M)
+    tl = wrap(d, s["title"], ft, tw_max)
     bl = wrap(d, s.get("body", ""), fb, W - 2 * M) if s.get("body") else []
     total = (text_h(fk, kl, 1.4) + 22 if kl else 0) + text_h(ft, tl, 1.3) + 40 + 6 + (34 + text_h(fb, bl, 1.5) if bl else 0) + 40 + 50
     y = vcenter(total, top=250)
     if kl:
         y = draw_lines(d, kl, fk, y, RED, 1.4) + 22
+    th = text_h(ft, tl, 1.3)
+    spot(img, M + 160, int(y + th / 2), 140, s.get("icon"), s.get("icon2"), RED)
+    d = ImageDraw.Draw(img)
     y = draw_lines(d, tl, ft, y, INK, 1.3) + 40
     y = acc_line(d, y, RED)
     if bl:
@@ -391,13 +445,22 @@ def slide_point(s, i, n):
     tl = wrap(d, s["title"], ft, W - 2 * M)
     bl = wrap(d, s.get("body", ""), fb, W - 2 * M) if s.get("body") else []
     has_num = s.get("num") is not None
-    total = (230 if has_num else 0) + text_h(ft, tl, 1.38) + 40 + 6 + (40 + text_h(fb, bl, 1.6) if bl else 0)
-    y = vcenter(total, top=180)
+    ic = s.get("icon")
+    row = 330 if ic else (230 if has_num else 0)
+    total = row + text_h(ft, tl, 1.38) + 40 + 6 + (40 + text_h(fb, bl, 1.6) if bl else 0)
+    y = vcenter(total, top=170)
+    if ic:
+        r = 135
+        cx = M + r + 22 if has_num else W - M - r - 22
+        spot(img, cx, int(y + r + 22), r, ic, s.get("icon2"))
+        d = ImageDraw.Draw(img)
     if has_num:
         num = str(s["num"]).translate(AR_DIGITS)
         bb = d.textbbox((0, 0), num, font=fn)
-        d.text((W - M - bb[2], y - bb[1]), num, font=fn, fill=ACC)
-        y += (bb[3] - bb[1]) + 50
+        top_n = y + (row - (bb[3] - bb[1])) / 2 if ic else y
+        d.text((W - M - bb[2], top_n - bb[1]), num, font=fn, fill=ACC)
+    if ic or has_num:
+        y += (row if ic else (d.textbbox((0, 0), str(s["num"]).translate(AR_DIGITS), font=fn)[3] - d.textbbox((0, 0), str(s["num"]).translate(AR_DIGITS), font=fn)[1])) + 50
     y = draw_lines(d, tl, ft, y, INK, 1.38) + 40
     y = acc_line(d, y, ACC)
     if bl:
@@ -410,13 +473,24 @@ def slide_redflags(s, i, n):
     img, d = canvas(PAPER)
     red_band(d, s.get("kicker", "الطوارئ فورًا لو"), i, n)
     ft, fi, fb = display(70, 700), text_font(50, 600), text_font(44, 500)
-    tl = wrap(d, s.get("title", ""), ft, W - 2 * M) if s.get("title") else []
+    ic = s.get("icon")
+    tl = wrap(d, s.get("title", ""), ft, W - 2 * M - (300 if ic else 0)) if s.get("title") else []
     items = s.get("items") or []
     il = [wrap(d, it, fi, W - 2 * M - 50) for it in items]
     bl = wrap(d, s.get("body", ""), fb, W - 2 * M) if (s.get("body") and not items) else []
     total = (text_h(ft, tl, 1.38) + 56 if tl else 0) + sum(text_h(fi, l, 1.4) + 44 for l in il) + (text_h(fb, bl, 1.6) if bl else 0)
+    if ic:
+        total += 120
     y = vcenter(total, top=240)
-    if tl:
+    if ic:
+        r = 115
+        th = max(text_h(ft, tl, 1.38), 2 * r) if tl else 2 * r
+        spot(img, M + r + 22, int(y + th / 2), r, ic, s.get("icon2"), RED)
+        d = ImageDraw.Draw(img)
+        if tl:
+            draw_lines(d, tl, ft, y + (th - text_h(ft, tl, 1.38)) / 2, INK, 1.38)
+        y += th + 60
+    elif tl:
         y = draw_lines(d, tl, ft, y, INK, 1.38) + 56
     for l in il:
         d.rounded_rectangle([W - M - 20, y + 22, W - M, y + 42], radius=4, fill=RED)
@@ -455,7 +529,11 @@ def slide_myth(s, i, n):
     y = split + 60
     y = label(y, "الحقيقة", TEAL)
     ft, fb = display(68, 700), text_font(44, 500)
-    y = draw_lines(d, wrap(d, s["title"], ft, W - 2 * M), ft, y, INK, 1.38) + 30
+    ic = s.get("icon")
+    if ic:
+        spot(img, M + 115, split + 150, 100, ic, s.get("icon2"), TEAL)
+        d = ImageDraw.Draw(img)
+    y = draw_lines(d, wrap(d, s["title"], ft, W - 2 * M - (260 if ic else 0)), ft, y, INK, 1.38) + 30
     if s.get("body"):
         draw_lines(d, wrap(d, s["body"], fb, W - 2 * M), fb, y, BODY, 1.6)
     footer(d, i, n)
@@ -474,6 +552,9 @@ def slide_answer(s, i, n):
     bl = wrap(d, s.get("body", ""), fb, W - 2 * M) if s.get("body") else []
     total = 130 + 50 + text_h(ft, tl, 1.38) + (36 + text_h(fb, bl, 1.6) if bl else 0)
     y = vcenter(total, top=180)
+    if s.get("icon"):
+        spot(img, M + 120, int(y + 60), 105, s["icon"], s.get("icon2"), col)
+        d = ImageDraw.Draw(img)
     v = "الإجابة: " + s.get("verdict", "صح")
     tw = d.textlength(v, font=fv, direction="rtl")
     d.rounded_rectangle([W - M - tw - 70, y, W - M, y + 120], radius=20, fill=bg)
@@ -491,11 +572,17 @@ def slide_data(s, i, n):
     badge(d, s.get("kicker", "بالأرقام"), ACC)
     mark(d, i, n)
     ft, fl = display(72, 700), text_font(36, 600)
-    tl = wrap(d, s["title"], ft, W - 2 * M)
+    ic = s.get("icon")
+    tl = wrap(d, s["title"], ft, W - 2 * M - (260 if ic else 0))
     bars = s.get("bars", [])
-    total = text_h(ft, tl, 1.38) + 70 + len(bars) * 140 + 60
+    th = max(text_h(ft, tl, 1.38), 220 if ic else 0)
+    total = th + 70 + len(bars) * 140 + 60
     y = vcenter(total, top=180)
-    y = draw_lines(d, tl, ft, y, INK, 1.38) + 70
+    if ic:
+        spot(img, M + 112, int(y + th / 2), 95, ic, s.get("icon2"))
+        d = ImageDraw.Draw(img)
+    draw_lines(d, tl, ft, y + (th - text_h(ft, tl, 1.38)) / 2, INK, 1.38)
+    y += th + 70
     for b in bars:
         lab, val = clean(b.get("label", "")), clean(str(b.get("value", ""))).translate(AR_DIGITS)
         tw = d.textlength(lab, font=fl, direction="rtl")
@@ -521,12 +608,18 @@ def slide_checklist(s, i, n):
     badge(d, s.get("kicker", "احفظها"), ACC)
     mark(d, i, n)
     ft, fi = display(72, 700), text_font(42, 600)
-    tl = wrap(d, s.get("title", "الخلاصة في صورة واحدة"), ft, W - 2 * M)
+    ic = s.get("icon")
+    tl = wrap(d, s.get("title", "الخلاصة في صورة واحدة"), ft, W - 2 * M - (190 if ic else 0))
     rows = [wrap(d, it, fi, W - 2 * M - 140) for it in s.get("items", [])]
     rh = [text_h(fi, r, 1.4) + 52 for r in rows]
-    total = text_h(ft, tl, 1.38) + 50 + sum(rh) + 22 * (len(rows) - 1)
+    th = max(text_h(ft, tl, 1.38), 160 if ic else 0)
+    total = th + 50 + sum(rh) + 22 * (len(rows) - 1)
     y = vcenter(total, top=180)
-    y = draw_lines(d, tl, ft, y, INK, 1.38) + 50
+    if ic:
+        spot(img, M + 82, int(y + th / 2), 66, ic, None, ACC, TINT)
+        d = ImageDraw.Draw(img)
+    draw_lines(d, tl, ft, y + (th - text_h(ft, tl, 1.38)) / 2, INK, 1.38)
+    y += th + 50
     for r, h in zip(rows, rh):
         if y + h > H - FOOT - 10:
             break
