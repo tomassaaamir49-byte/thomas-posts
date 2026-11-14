@@ -170,9 +170,41 @@ def block_height(d, text, f, maxw=W - 2 * M, gap=1.45):
 
 
 # ---------- furniture ----------
+PHOTO_BG = os.environ.get("POST_PHOTO_BG", "1") != "0"   # Thomas's photo behind every slide (user request 2026-11-14)
+_bg_cache = {}
+
+
+def _photo_frame():
+    """Thomas's photo filling the 1080x1350 frame, face around y=560 (behind the content)."""
+    if "frame" in _bg_cache:
+        return _bg_cache["frame"]
+    ph = _photo()
+    if ph is None:
+        _bg_cache["frame"] = None
+        return None
+    ph = ph.resize((W, int(ph.height * W / ph.width)), Image.LANCZOS)
+    off = max(H - ph.height, min(0, 560 - int(ph.height * 0.27)))
+    fr = Image.new("RGB", (W, H), PAPER)
+    fr.paste(ph, (0, off))
+    _bg_cache["frame"] = fr
+    return fr
+
+
 def canvas(ground):
+    """Slide ground. With PHOTO_BG the photo sits under a veil of the ground colour so text stays crisp."""
     img = Image.new("RGB", (W, H), ground)
+    fr = _photo_frame() if PHOTO_BG else None
+    if fr is not None:
+        veil = 0.86 if ground != INK else 0.84
+        img = Image.blend(fr, img, veil)
     return img, ImageDraw.Draw(img)
+
+
+def band(img, box, color, alpha=0.88):
+    """Semi-opaque colour band, so the background photo still reads through it."""
+    x0, y0, x1, y1 = [int(v) for v in box]
+    reg = img.crop((x0, y0, x1, y1))
+    img.paste(Image.blend(reg, Image.new("RGB", reg.size, color), alpha), (x0, y0))
 
 
 def badge(d, text, fill, y=56, txt=WHITE):
@@ -504,7 +536,8 @@ def slide_redflags(s, i, n):
 def slide_myth(s, i, n):
     img, d = canvas(PAPER)
     split = int(H * 0.42)
-    d.rectangle([0, 0, W, split], fill=MYTH_BG)
+    band(img, [0, 0, W, split], MYTH_BG, 0.9)
+    d = ImageDraw.Draw(img)
     mark(d, i, n)
     fl = text_font(32, 700)
 
