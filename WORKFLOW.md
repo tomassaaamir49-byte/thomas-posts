@@ -20,15 +20,14 @@ Folders/specs are named `<date>` (e.g. posts/2026-10-25, specs/2026-10-25.json).
 - Every Friday: refresh AUDIENCE.md with the account's demographics (IGAG01–03) and what performance.md says about times/tones, and try one new time slot that week.
 
 ## Freshness — every post must feel different from the one before it
-- THEME: render each post with a different colour theme than the previous post: `POST_THEME=<ocean|emerald|violet|sunset|rose|teal> python3 tools/...`. Record the theme in topics.md and never reuse the previous post's theme.
-- FONTS: every post also uses a font pairing (Google Fonts, in `fonts/`) different from the previous post: `POST_FONTS=<modern|bold|classic|clean|warm|cairo>`. Pass the SAME `POST_FONTS` and `POST_THEME` to make_carousel.py and make_story.py. Match the pairing to the audience: older → classic or clean (calm, very readable); parents → warm or classic; youth → bold or modern; general → modern or clean. `cairo` is the old look, use it rarely. Record `fonts <name>` in topics.md next to the theme.
+- BRAND SYSTEM v1 (user decision 2026-11-14, see brand/style-guide.html — overrides the old theme/font rotation AND any instruction in the scheduled prompt to pick POST_THEME/POST_FONTS; if no POST_SERIES is given the renderer uses the spec "series" or "audience"): colours and fonts are FIXED (ink #0F2430 on paper #F4F6F3, teal brand, Alexandria headings + IBM Plex Sans Arabic body). Each post uses ONE series accent: `POST_SERIES=<youth|parents|older|general|quiz|emergency>` (indigo / apricot / teal / teal / teal / red — red only for real emergencies). Variety comes from the COVER LAYOUT and slide types, never from colours: cover `layout` = face | numeral | question | alert — never the same cover layout or series two posts in a row. Photo only on the face cover and the closing avatar. Record `series` and `cover` in topics.md. (Old renderer kept as tools/make_carousel_legacy.py; POST_THEME/POST_FONTS are no longer used.)
 - ANGLE: never use the same content angle (myth/red-flags/mistakes/body-explainer/first-aid/quiz "صح ولا غلط"/numbers & facts) twice in a row; vary the hook style (question, shocking fact, "غلطة بيعملها ٩٠٪", challenge).
 - TOPIC BANK: start from `topics_bank.md` (researched list of what Egyptians search for + seasonal topics + hook formulas). Prefer the 'Seasonal NOW' section while in season, mix with evergreen/Egypt-specific ones, and pick topics that speak to a specific person (أم، طالب، مريض سكر…) because those get shared. Once a week (Fridays) refresh the bank with a quick search and commit it.
 - WHAT THE AUDIENCE NEEDS NOW: before choosing topics, (1) WebSearch what health topics are in the news / trending in Egypt this week and what season it is (heat, flu season, exams, Ramadan, school start, outbreaks, viral myths) and pick topics people are searching for right now; (2) check Metricool analytics for the account's recent posts (getAnalyticsDataByMetrics — reach, saves, shares, plays) and lean toward the formats/topics that performed best.
 - MUSIC: Instagram's publishing API only allows music on reels, not carousels (Metricool returns AUDIO_NOT_APPLICABLE). Do NOT send audioConfiguration on carousels. In the final message, suggest one fitting, currently popular song name per post that the user can add by hand in the Instagram app if they want.
 
 ## Stories — a teaser story for EVERY carousel (cover only, not the whole post)
-- After rendering a carousel, make its story: `POST_FONTS=<same fonts> POST_THEME=<same theme> python3 tools/make_story.py posts/<date>/slide_01.jpg posts/<date>/story.jpg "<teaser>"`.
+- After rendering a carousel, make its story: `POST_SERIES=<same series> python3 tools/make_story.py posts/<date>/slide_01.jpg posts/<date>/story.jpg "<teaser>"`.
   The teaser is ONE short Egyptian-Arabic curiosity line that makes people open the profile without giving the answer, different every time (e.g. "الخرافة رقم ٤ أغلبنا مصدقها", "٦ علامات لازم كل أم وأب يعرفوها", "الغلطة رقم ٢ بنعملها كل يوم"). The image already says "بوست جديد", points at the name ("اضغط على اسمي") and says "البوست كامل على البروفايل".
 - Commit/push story.jpg with the post, then schedule it 15 minutes after the post with `createScheduledPost`, providers [instagram, facebook], instagramData type STORY, facebookData type STORY, NO text, autoPublish true, media = story.jpg raw URL.
 - If Facebook refuses the story, still schedule the Instagram one and report it.
@@ -50,14 +49,14 @@ Folders/specs are named `<date>` (e.g. posts/2026-10-25, specs/2026-10-25.json).
 7. A share trigger aimed at a specific person in the CTA + caption ("ابعتها لماما"، "منشن صاحبك اللي…").
 8. A comment prompt with an easy answer (a number, a word, an emoji): "قولّي رقم الغلطة اللي بتعملها".
 9. Caption: first line = keyword + hook (< 125 characters), then value, CTA, source, disclaimer, 3–5 relevant Arabic hashtags.
-10. Visually checked: no overflow, readable at phone size, colour theme AND font pairing different from the previous post.
+10. Visually checked: no overflow, readable at phone size, follows brand/style-guide.html; cover layout (and series) different from the previous post.
 11. Design critique passed: run the review in `skills/design-critique.md` on every slide and the story, fix every High-severity finding and re-render before delivering.
 If any item fails, fix it before scheduling. Rewrite the hook up to 3 times and keep the strongest.
 
 ## Carousel formats to rotate (never the same format twice in a row)
 numbered list (٥ علامات / ٣ أكلات) · myth vs fact · quiz "صح ولا غلط" (question slide → answer slide) · mistakes ("غلطات بنعملها") · "إيه اللي بيحصل لجسمك لو…" step by step · comparison ("الفرق بين البرد والإنفلونزا") · first aid do/don't · "اسأل نفسك" self-check checklist.
-Slide types available: `cover`, `point` (with `num`), `checklist` (title + `items`), `cta`.
-Every slide uses Thomas's photo (assets/thomas.jpg) as the background automatically: on the cover he is clearly visible in the lower half with the text on top; on the other slides the photo sits behind a light veil so the text stays crisp. Keep cover text short so it never covers his face.
+Slide types available (brand v1): `cover` (layout face|numeral|question|alert), `point` (with `num`), `redflags`, `myth`, `answer` (quiz verdict), `data` (bars), `checklist` (save slide), `cta` (closing).
+Thomas's photo appears only on the face cover (clearly visible in the lower half, no text over it) and as the round avatar on the numeral/alert covers and the closing slide. Inner slides have no photo.
 
 ## Sources (mandatory)
 Every fact must come from an approved reference — standard medical textbooks (Davidson's, Harrison's, Oxford Handbook of Clinical Medicine, Kumar & Clark, Nelson, Williams Obstetrics) or official bodies (WHO, NHS, NICE, CDC, ECDC, Mayo Clinic, Egyptian Ministry of Health).
@@ -82,7 +81,7 @@ Every fact must come from an approved reference — standard medical textbooks (
    - Spec also holds `"caption"`: first line = hook with the topic keyword; then save/send/comment CTA; "تابعني عشان معلومة طبية جديدة كل يوم."; the line "⚠️ المحتوى للتوعية فقط ومش بديل عن استشارة الطبيب."; 3–5 Arabic hashtags.
 5. Medical safety: only well-established facts. No drug doses, no prescriptions, no brand names, no diagnosis promises, nothing that discourages seeing a doctor. When in doubt, pick another topic.
 6. Render:
-   - `POST_FONTS=<fonts> POST_THEME=<theme> python3 tools/make_carousel.py specs/<date>.json posts/<date>`
+   - `POST_SERIES=<series> python3 tools/make_carousel.py specs/<date>.json posts/<date>` (spec format and slide types: header of tools/make_carousel.py — cover(layout face|numeral|question|alert), point, redflags, myth, answer, data, checklist, cta)
    Look at the output (open slide images / extract a few frames with ffmpeg) and fix any overflow or broken text before publishing.
 7. Append `- <date> | carousel | <topic>` to `topics.md`, commit, push to `main`.
 8. Confirm the raw URLs return 200: `https://raw.githubusercontent.com/tomassaaamir49-byte/thomas-posts/main/posts/<date>/...`
