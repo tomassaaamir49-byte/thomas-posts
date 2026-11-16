@@ -35,6 +35,7 @@ Columns: post | type | topic | angle | hook style | theme | audience | ig_time |
 | 2026-11-14-b | carousel | وجع الصدر: إمتى تكلم الإسعاف؟ ٤ علامات + اعمل كده لحد الإسعاف | numbered warning signs + action slide; FIRST brand v1 post (alert cover) | person + question + number | brand v1 · series emergency | general | 14:11 Sat (user request) | 14:11 (same post) | calm, clear | – | – | – | – | – | – | – | published via Metricool IG+FB (https://www.instagram.com/p/DfuLYeZpddV/), story 14:26; 2nd post of the day |
 | 2026-11-15 | carousel | تطعيم الإنفلونزا: ٣ أسئلة صح ولا غلط | quiz صح ولا غلط (question above verdict) + data bars slide (experiment) | person (حضرتك وبابا وماما) + number + quiz | brand v1 · series older | older | 11:00 Sun | 11:00 (same post) | respectful حضرتك | – | – | – | – | – | – | – | manual: sent 2026-11-14 |
 | 2026-11-16 | carousel | السماعات: ٥ غلطات | mistakes 'عدّ معايا' + do-it-now action (experiment) | person (لو السماعة مبتفارقش ودنك) + number | brand v1 · series youth | youth | 22:12 Sun (Metricool, user said publish now) | 22:12 (same post) | sharp & smart | – | – | – | – | – | – | – | published |
+| 2026-11-17 | carousel | النزلة المعوية عند الأطفال: ٥ خرافات | myth vs fact with crossed-out myth slides (first on brand v1) + one-word either/or comment ask 'عصير ولا محلول؟' (experiment) | person (لو طفلك عنده نزلة معوية) + number + curiosity 'رقم ٤' | brand v1 · series parents | parents | 21:00 Tue | 21:00 (same post) | calm, reassuring | – | – | – | – | – | – | – | manual: sent 2026-11-16 |
 
 ### Metricool refresh 2026-11-15 (IG, last 14 days; times converted UTC→Cairo; vape 8 Nov and flu-vaccine 15 Nov not in data yet)
 | matched post | published (Cairo) | reach | views | likes | comm | saves | follows | score |
@@ -48,6 +49,20 @@ Columns: post | type | topic | angle | hook style | theme | audience | ig_time |
 | 2026-11-07 iron quiz (parents) | Sat 01:20 | 163 | 418 | 9 | 0 | 0 | 1 | 8.6 |
 | 2026-11-05 laptop challenge (youth) | Thu 16:13 | 165 | 461 | 13 | 2 | 0 | 0 | 10.3 |
 | 31 Oct by hand | Sun 01:19 | 184 | 411 | 16 | 0 | 0 | 0 | 8.7 |
+
+### Metricool refresh 2026-11-16 (IG, last 14 days; times Cairo)
+| matched post | published (Cairo) | reach | views | likes | comm | saves | follows | score |
+|---|---|---|---|---|---|---|---|---|
+| 2026-11-16 headphones mistakes (youth) | Sun 22:13 | 36 | 105 | 3 | 0 | 0 | 0 | 8.3 (1 day) |
+| 2026-11-14-b chest pain (general, emergency) | Sat 14:12 | 73 | 192 | 7 | 0 | 0 | 0 | 9.6 |
+| 2026-11-14 kids diabetes (parents) | Sat 00:20 | 84 | 233 | 8 | 0 | 0 | 0 | 9.5 |
+| 2026-11-13 acne myths (youth) | Thu 21:10 | 97 | 281 | 14 | 0 | 0 | 0 | **14.4** |
+| 2026-11-12 diabetic foot (older) | Wed 21:56 | 141 | 355 | 10 | 3 | 0 | 0 | 11.3 |
+| 2026-11-10 measles timeline (parents) | Mon 22:05 | 115 | 300 | 9 | 0 | 0 | 1 | 12.2 |
+| 2026-11-08 kidney self-check (older) | Sat 21:05 | 92 | 244 | 7 | 0 | 0 | 0 | 7.6 |
+| 2026-11-07 iron quiz (parents) | Sat 01:20 | 163 | 419 | 9 | 0 | 0 | 1 | 8.6 |
+| 2026-11-05 laptop challenge (youth) | Thu 16:13 | 165 | 461 | 13 | 2 | 0 | 0 | 10.3 |
+Shares are not returned by Metricool (null). The 15 Nov flu-vaccine quiz (sent for Sun 11:00) does not appear in Instagram data → apparently not published.
 
 ## Lessons
 - 2026-10-21 run: only 1 post with data (headache red flags, 13.3; saves 2, comments 0). Saves came, comments didn't → 22nd posts push an easy-number comment prompt ("رقم كام؟" / "جبت كام من ٣؟") and a checklist slide; experiment = quiz "صح ولا غلط" format (pm, salt). Compare comments on 22-pm vs 22-am next run.
@@ -74,3 +89,4 @@ Columns: post | type | topic | angle | hook style | theme | audience | ig_time |
 - 2026-11-13 run (for Sat 14 Nov, Friday refresh): 7 posts with data; the vape quiz (8 Nov) is still missing from Metricool. The acne myth-vs-fact (youth, Thu 21:08) leads early with 14.9 (7 likes on 47 reach) → myth format + youth night slot works; the measles timeline holds 12.7 with 1 follow; the diabetic-foot post climbed to 106 reach but 9.4. Saves and shares are still zero for 3 weeks, comments only came from number asks. 14 Nov = parents (rotation: youth 13th, older 12th) at Sat 21:00 (parents-after-bedtime slot that gave the best recent parent score) on type 1 diabetes signs in children for World Diabetes Day (NHS 4 Ts), numbered signs (13th was myth), theme teal, fonts warm; experiment = two-level action slide (كشف في أسرع وقت vs الطوارئ فورًا) + share to جروب المدرسة. Also fixed a renderer bug: tall display fonts (warm) made CTA action titles overlap their subtitles.
 - 2026-11-14 run (for Sun 15 Nov): 8 posts in the 14-day window. Best recent: acne myth-vs-fact (youth, Thu 21:08) 14.0 on 86 reach; diabetic-foot (older) now has **3 comments** (12.8) — the first older-audience comments since October, so habit/number asks work for older too; measles timeline 12.6 with a follow. Kids-diabetes (posted 00:19) and the chest-pain post (14:11) are too new. Saves and shares are still zero for 3+ weeks. → Sun 15 Nov = older at 11:00 (reach slot), seasonal flu-vaccine quiz (MoH warned on 5 Nov about flu complications in older adults); experiment = question printed above each verdict + first data/bars 'مكنتش أعرف' slide to push saves.
 - 2026-11-15 run (for Mon 16 Nov): 9 posts in the 14-day window. Best recent: youth acne myths at Thu 21:10 (14.1, best like rate 14%); measles timeline 12.4 with a follow; diabetic foot keeps the only recent comments (3). After-midnight posts (00:20, 01:19, 01:20) and the Saturday-night older post stay weakest (7.6–10.8). Saves still 0 for 3 weeks. → youth at 21:00 with the 'عدّ معايا' mistakes format (headphones, WHO) + experiment: a do-it-now action on slide 2 to lift saves/comments; compare with the acne post.
+- 2026-11-16 run (for Tue 17 Nov): 9 posts with data. Best recent stays the youth acne myth-vs-fact (Thu 21:10, 14.4) then the parents measles timeline (Mon 22:05, 12.2, 1 follow); weakest are after-midnight and Saturday posts (7.6–9.6). The flu-vaccine post seems unpublished; headphones (Sun 22:13) is 1 day old (8.3). → Tue 17 Nov = parents (rotation: youth 16th, older 15th) at 21:00, repeating the winning myth-vs-fact angle with the crossed-out myth slide on a seasonal parent topic (winter stomach bug, NHS); experiment = one-word either/or comment ask ('عصير ولا محلول؟') since saves are still 0 and comments only come from easy asks.
