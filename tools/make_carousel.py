@@ -469,22 +469,29 @@ def cover_classic(s, i, n):
         d.line([(0, yy), (W, yy)], fill=mix(WHITE, PAPER, yy / H))
     ph = _photo()
     if ph is not None:
-        ph = ph.resize((W, int(ph.height * W / ph.width)), Image.LANCZOS)
-        layer = Image.new("RGB", (W, H), PAPER)
-        layer.paste(ph, (0, 900 - int(ph.height * 0.27)))
-        mask = Image.new("L", (W, H))
+        # FULL photo (user request 2026-11-16: "حاطين نص صورتي"): show Thomas from head to hands,
+        # scaled to fit the band between the text block and the footer, edges feathered into the ground.
+        top_y = int(os.environ.get("POST_COVER_PHOTO_TOP", "500"))
+        bot_y = H - 150
+        ph = ph.crop((0, int(ph.height * 0.08), ph.width, ph.height))
+        sc = (bot_y - top_y) / ph.height
+        pw, phh = int(ph.width * sc), bot_y - top_y
+        ph = ph.resize((pw, phh), Image.LANCZOS)
+        x0 = (W - pw) // 2
+        mask = Image.new("L", (pw, phh), 255)
         md = ImageDraw.Draw(mask)
-        for yy in range(H):
-            if yy < 560:
-                a = 238
-            elif yy < 760:
-                a = int(238 - (yy - 560) / 200 * 205)
-            elif yy < 1120:
-                a = 33
-            else:
-                a = int(33 + (yy - 1120) / 230 * 200)
-            md.line([(0, yy), (W, yy)], fill=a)
-        img = Image.composite(img, layer, mask)
+        fx, fy = 70, 170
+        for k in range(fx):
+            a = int(255 * k / fx)
+            md.line([(k, 0), (k, phh)], fill=a)
+            md.line([(pw - 1 - k, 0), (pw - 1 - k, phh)], fill=a)
+        top = Image.new("L", (pw, phh), 255)
+        tdr = ImageDraw.Draw(top)
+        for k in range(fy):
+            tdr.line([(0, k), (pw, k)], fill=int(255 * k / fy))
+        from PIL import ImageChops
+        mask = ImageChops.multiply(mask, top)
+        img.paste(ph, (x0, top_y), mask)
         d = ImageDraw.Draw(img)
     d.rectangle([0, 0, W, 14], fill=ACC)
     # counter pill (top-left) and kicker pill (top-right)
