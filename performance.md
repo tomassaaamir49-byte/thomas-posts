@@ -37,6 +37,7 @@ Columns: post | type | topic | angle | hook style | theme | audience | ig_time |
 | 2026-11-16 | carousel | السماعات: ٥ غلطات | mistakes 'عدّ معايا' + do-it-now action (experiment) | person (لو السماعة مبتفارقش ودنك) + number | brand v1 · series youth | youth | 22:12 Sun (Metricool, user said publish now) | 22:12 (same post) | sharp & smart | – | – | – | – | – | – | – | published |
 | 2026-11-17 | carousel | النزلة المعوية عند الأطفال: ٥ خرافات | myth vs fact with crossed-out myth slides (first on brand v1) + one-word either/or comment ask 'عصير ولا محلول؟' (experiment) | person (لو طفلك عنده نزلة معوية) + number + curiosity 'رقم ٤' | brand v1 · series parents | parents | 21:00 Tue | 21:00 (same post) | calm, reassuring | – | – | – | – | – | – | – | manual: sent 2026-11-16 |
 | 2026-11-20 | carousel | التنميل في الإيد والرجل: إمتى تطمّن وإمتى تقلق؟ | reassure-then-warn + 4 signs + emergency (new angle for older) | person (لو حضرتك بتحس بتنميل) + question + number | brand v1 · series older | older | 19:00 Fri (new time test) | 19:00 (same post) | respectful حضرتك | – | – | – | – | – | – | – | manual: sent 2026-11-19 |
+| 2026-11-21 | carousel | المضاد الحيوي: ٤ أسئلة صح ولا غلط | quiz صح ولا غلط + news hook (AMR week) (experiment) | person (لو بتاخد مضاد حيوي مع كل برد) + number + quiz | brand v1 · series youth | youth | 21:00 Sat | 21:00 (same post) | sharp & smart, no shame | – | – | – | – | – | – | – | manual: sent 2026-11-20 |
 
 ### Metricool refresh 2026-11-15 (IG, last 14 days; times converted UTC→Cairo; vape 8 Nov and flu-vaccine 15 Nov not in data yet)
 | matched post | published (Cairo) | reach | views | likes | comm | saves | follows | score |
@@ -78,6 +79,19 @@ Shares are not returned by Metricool (null). The 15 Nov flu-vaccine quiz (sent f
 | 2026-11-07 iron quiz (parents) | Sat 01:20 | 166 | 423 | 10 | 0 | 0 | 1 | 9.0 |
 | 2026-11-05 laptop challenge (youth) | Thu 16:13 | 166 | 464 | 13 | 2 | 0 | 0 | 10.2 |
 
+### Metricool refresh 2026-11-20 (IG, last 14 days; times Cairo; nothing new after 15 Nov → the 17 Nov stomach-bug and 20 Nov numbness posts are not on Instagram yet)
+| matched post | published (Cairo) | reach | views | likes | comm | saves | follows | score |
+|---|---|---|---|---|---|---|---|---|
+| 2026-11-16 headphones mistakes (youth) | Sun 22:13 | 128 | 306 | 9 | 0 | 1 | 0 | 9.4 |
+| 2026-11-14-b chest pain (general, emergency) | Sat 14:12 | 97 | 255 | 7 | 0 | 0 | 0 | 7.2 |
+| 2026-11-14 kids diabetes (parents) | Sat 00:20 | 107 | 282 | 8 | 0 | 0 | 0 | 7.5 |
+| 2026-11-13 acne myths (youth) | Thu 21:10 | 111 | 311 | 15 | 0 | 0 | 0 | **13.5** |
+| 2026-11-12 diabetic foot (older) | Wed 21:56 | 151 | 373 | 11 | 3 | 0 | 0 | 11.3 |
+| 2026-11-10 measles timeline (parents) | Mon 22:05 | 125 | 323 | 9 | 0 | 0 | 1 | 11.2 |
+| 2026-11-08 kidney self-check (older) | Sat 21:05 | 94 | 253 | 7 | 0 | 0 | 0 | 7.4 |
+| 2026-11-07 iron quiz (parents) | Sat 01:20 | 166 | 423 | 10 | 0 | 0 | 1 | 9.0 |
+Font pairing is fixed by brand v1 (Alexandria + IBM Plex) since 14 Nov, so it no longer varies between posts.
+
 ## Lessons
 - 2026-10-21 run: only 1 post with data (headache red flags, 13.3; saves 2, comments 0). Saves came, comments didn't → 22nd posts push an easy-number comment prompt ("رقم كام؟" / "جبت كام من ٣؟") and a checklist slide; experiment = quiz "صح ولا غلط" format (pm, salt). Compare comments on 22-pm vs 22-am next run.
 
@@ -106,3 +120,4 @@ Shares are not returned by Metricool (null). The 15 Nov flu-vaccine quiz (sent f
 - 2026-11-16 run (for Tue 17 Nov): 9 posts with data. Best recent stays the youth acne myth-vs-fact (Thu 21:10, 14.4) then the parents measles timeline (Mon 22:05, 12.2, 1 follow); weakest are after-midnight and Saturday posts (7.6–9.6). The flu-vaccine post seems unpublished; headphones (Sun 22:13) is 1 day old (8.3). → Tue 17 Nov = parents (rotation: youth 16th, older 15th) at 21:00, repeating the winning myth-vs-fact angle with the crossed-out myth slide on a seasonal parent topic (winter stomach bug, NHS); experiment = one-word either/or comment ask ('عصير ولا محلول؟') since saves are still 0 and comments only come from easy asks.
 - 2026-11-16 (user feedback): 'حاطين نص صورتي' → the classic cover now shows Thomas's FULL photo (head to hands), scaled into the band under the headline with feathered edges (tools/make_carousel.py cover_classic).
 - 2026-11-19 run (for Fri 20 Nov): 9 posts in the 14-day window; nothing published since 15 Nov (17 Nov stomach-bug post not on Instagram). Best recent: youth acne myths (13.9, best like rate); the headphones 'do-it-now' slide earned the first save in 3+ weeks (10.1); weakest are Saturday posts and the chest-pain midday post (7.3–7.9). → Fri 20 Nov = older (rotation: parents 17th, youth 16th) on numbness/pins and needles (MoH warned on numbness; NHS), new 'إمتى تطمّن وإمتى تقلق' angle (17th was myth); experiment = Friday 19:00 after-Maghrib slot for older (FB 35+ peak; Friday mornings are weak and 11:30–13:30 is Jumuah) + 'رقم كام كنت فاكرها عادية؟' comment ask.
+- 2026-11-20 run (for Sat 21 Nov, Friday refresh): 8 posts in the 14-day window; still nothing on Instagram after 15 Nov (17 Nov stomach-bug, 20 Nov numbness not published yet) → results depend on publishing. Best recent stays youth acne myths at Thu 21:10 (13.5, best like rate 13.5%); diabetic foot holds the only comments (3, 11.3); weakest are Saturday and after-midnight posts (7.2–7.5). → Sat 21 Nov = youth (rotation: older 20th, parents 17th) at 21:00 with the quiz format (early winner) + experiment: a timely news hook (World AMR Awareness Week + MoH antibiotic campaign) in the caption and story; compare reach with non-news posts.

@@ -55,6 +55,14 @@ Egyptian news early–mid Nov 2026: MoH warns people not to ignore chest pain an
 - قلة النوم وقت الامتحانات (youth, Dec–Jan exams)
 - الكشف المبكر لسرطان الثدي (women/older, WHO/NHS — tactful)
 
+### Added 2026-11-20 (weekly refresh)
+Egyptian news mid–late Nov 2026: MoH launched the antimicrobial-resistance campaign «خلّي خطوتك فارقة» during World AMR Awareness Week (18–24 Nov); MoH marked World Diabetes Day stressing early detection; MoH and the National Council for Women signed a women's-health programme (awareness + early detection); a national child-health strategy from birth to 18.
+- المضاد الحيوي: صح ولا غلط (used 21 Nov, NHS + WHO)
+- المضاد الحيوي عند الأطفال: إمتى محتاجينه وإمتى لأ (parents, NHS/CDC)
+- الكشف المبكر لسرطان الثدي (women/older, WHO/NHS — tactful)
+- تساقط الشعر عند الشباب: ٥٠–١٠٠ شعرة في اليوم طبيعي (youth, NHS)
+- قلة النوم وقت الامتحانات (youth, Dec–Jan exams)
+
 ## 2. Evergreen — most searched symptoms & questions
 (Most-googled health searches: lightheadedness, hair loss, memory, fatigue, bloating, congestion, cholesterol, kidney stones, headache, dandruff, A1C, immunity, metabolism, water, salt.)
 - تساقط الشعر: أسباب بنتجاهلها
